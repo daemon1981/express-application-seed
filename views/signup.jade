@@ -1,0 +1,17 @@
+extends layout
+
+block content
+    section
+        form.form-horizontal(id="singup", method="POST", action="/signup")
+            fieldset
+                legend Inscription
+                .control-group
+                    label.control-label(for='email') Email
+                    .controls
+                        input#email(type='text', name='email', placeholder="Email")
+                .control-group
+                    label.control-label(for='password') Password
+                    .controls
+                        input#password(type='password', name='password', placeholder="Password")
+                .control-group
+                    input.btn(type="submit", value="Sing UP")
