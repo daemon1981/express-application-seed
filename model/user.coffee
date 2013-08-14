@@ -1,34 +1,33 @@
 mongoose = require 'mongoose'
+moment   = require 'moment'
+pwd      = require 'pwd'
 
 Schema   = mongoose.Schema
 
-hash = require "../lib/hash"
-
 UserSchema = new Schema(
-  firstName:  String
-  lastName:   String
-  email:      String
-  salt:       String
-  hash:       String
+  firstName:    String
+  lastName:     String
+  email:        type: String, required: true
+  salt:         type: String
+  passwordHash: String
   facebook:
     id:       String
-    email:    String
     name:     String
   twitter:
     id:       String
-    email:    String
     name:     String
+  regeneratePasswordKey: String
+  regeneratePasswordDate: Date
 )
+
+###
+Statics
+###
 
 UserSchema.statics.signup = (email, password, done) ->
   self = this
-  hash password, (err, salt, hash) ->
-    throw err  if err
-    new self(
-      email: email
-      salt: salt
-      hash: hash
-    ).save done
+  newUser = new self(email: email)
+  newUser.updatePassword password, done
 
 UserSchema.statics.isValidUserPassword = (email, password, done) ->
   this.findOne
@@ -39,9 +38,9 @@ UserSchema.statics.isValidUserPassword = (email, password, done) ->
       return done(null, false,
         message: "Incorrect email."
       )
-    hash password, user.salt, (err, hash) ->
+    pwd.hash password, user.salt, (err, hash) ->
       return done(err) if err
-      return done(null, user)  if hash is user.hash
+      return done(null, user)  if hash is user.passwordHash
       done null, false,
         message: "Incorrect password."
 
@@ -57,9 +56,33 @@ UserSchema.statics.findOrCreateFaceBookUser = (profile, done) ->
         email:   profile.emails[0].value
         facebook:
           id:    profile.id
-          email: profile.emails[0].value
           name:  profile.displayName
       ).save done
+
+###
+Methods
+###
+
+UserSchema.methods.requestResetPassword = (callback) ->
+  self = this
+  pwd.hash this.salt, (err, salt, hash) ->
+    callback(err) if err
+    self.regeneratePasswordKey  = salt.match(/([0-9a-z])/ig).slice(0, 50).join('')
+    self.regeneratePasswordDate = moment()
+    self.save (err) ->
+      callback(err) if err
+      callback(null, self)
+
+UserSchema.methods.updatePassword = (password, done) ->
+  self = this
+  pwd.hash password, (err, salt, hash) ->
+    throw err  if err
+    self.salt         = salt
+    self.passwordHash = hash
+    # reset password reset params
+    self.regeneratePasswordKey = null
+    self.regeneratePasswordDate = null
+    self.save done
 
 User = mongoose.model "User", UserSchema
 

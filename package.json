@@ -24,6 +24,7 @@
     , "connect-flash": "v0.1.1"
     , "email-templates": "*"
     , "nodemailer": "v0.5.2"
+    , "pwd": "0.0.2"
   },
   "devDependencies": {
     "should": "1.2.2"

@@ -31,22 +31,55 @@ module.exports = (app) ->
         user: null
 
   app.get "/login", (req, res) ->
-    res.render "login"
+    res.render "user/login"
 
   app.post "/login", passport.authenticate("local",
     successRedirect: "/"
     failureRedirect: "/login"
   )
   app.get "/signup", (req, res) ->
-    res.render "signup"
+    res.render "user/signup"
 
   app.post "/signup", userExist, (req, res, next) ->
     User.signup req.body.email, req.body.password, (err, user) ->
-      throw err if err
-      mailer.sendSinupConfirmation(user)
+      return next(err) if err
+      mailer.sendSinupConfirmation(user.email)
       req.login user, (err) ->
         return next(err)  if err
         res.redirect "/profile"
+
+  app.get "/forgot/password", (req, res, next) ->
+    res.render "user/forgotPassword"
+
+  app.post "/forgot/password", (req, res, next) ->
+    User.findOne email: req.body.email, (err, user) ->
+      return next(err) if err
+      if !user
+        return res.render "user/forgotPassword", email: req.body.email, warningMessage: 'Email was not found'
+      user.requestResetPassword (err, user) ->
+        next(err) if err
+        url = 'http://' + req.host + '/reset/password?key=' + user.regeneratePasswordKey
+        mailer.sendForgotPassword(user.email, url)
+        res.render "user/forgotPassword", successMessage: 'We\'ve sent to you a email. Check your mail box.'
+
+  app.get "/reset/password", (req, res, next) ->
+    User.findOne regeneratePasswordKey: req.query.key, (err, user) ->
+      return next(err) if err
+      if !user
+        # @todo: detect here if an IP is searching for available key otherwise block this IP for few days
+        return res.redirect "/"
+      res.render "user/resetPassword", regeneratePasswordKey: user.regeneratePasswordKey
+
+  app.post "/reset/password", (req, res, next) ->
+    User.findOne regeneratePasswordKey: req.body.regeneratePasswordKey, (err, user) ->
+      return next(err) if err
+      if !user
+        # @todo: detect here if an IP is searching for available key otherwise block this IP for few days
+        return res.redirect "/"
+      if req.body.password
+        user.updatePassword req.body.password, (err) ->
+          return next(err) if err
+          res.render "user/resetPassword", successMessage: 'Your password has been updated. Please login again.'
 
   app.get "/auth/facebook", passport.authenticate("facebook",
     scope: "email"
@@ -54,11 +87,11 @@ module.exports = (app) ->
   app.get "/auth/facebook/callback", passport.authenticate("facebook",
     failureRedirect: "/login"
   ), (req, res) ->
-    res.render "profile",
+    res.render "user/profile",
       user: req.user
 
   app.get "/profile", isAuthenticated, (req, res) ->
-    res.render "profile",
+    res.render "user/profile",
       user: req.user
 
   app.get "/logout", (req, res) ->

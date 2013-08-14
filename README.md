@@ -1,4 +1,6 @@
-# PassportJS-Authentication
+# Node-Plinth
+
+Web site plinth using awesome libs.
 
 ## Setup
 

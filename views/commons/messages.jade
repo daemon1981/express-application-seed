@@ -1,0 +1,10 @@
+mixin message(msg, classes)
+    .alert(class=classes)
+        button(type="button", class="close", data-dismiss="alert") &times;
+        | #{msg}
+
+- if (warningMessage)
+    +message(warningMessage)
+
+- if (successMessage)
+    +message(successMessage, 'alert-success')

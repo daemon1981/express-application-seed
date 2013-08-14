@@ -20,7 +20,7 @@ describe "user", ->
           users.length.should.equal(1)
           users[0].email.should.equal(email)
           should.exist(users[0].salt)
-          should.exist(users[0].hash)
+          should.exist(users[0].passwordHash)
           done()
 
   describe "#isValidUserPassword()", ->
@@ -47,6 +47,21 @@ describe "user", ->
           assert.deepEqual msg, message: 'Incorrect password.'
           done()
 
+  describe "#requestResetPassword()", ->
+    passwd = 'passwd'
+    email = 'toto@toto.com'
+    user = {}
+    beforeEach (done) ->
+      User.signup email, passwd, (err, newUser) ->
+        user = newUser
+        done()
+    it "should set required fields for forgot password process", (done) ->
+      user.requestResetPassword (err, modifedUser) ->
+        should.not.exist(err)
+        should.exist(modifedUser.regeneratePasswordKey)
+        should.exist(modifedUser.regeneratePasswordDate)
+        done()
+
   describe "#findOrCreateFaceBookUser()", ->
     email = 'toto@toto.com'
     profile =
@@ -58,7 +73,7 @@ describe "user", ->
         should.not.exist(err)
         User.find {}, (err, users) ->
           users.length.should.equal(1)
-          users[0].facebook.email.should.equal(email)
+          users[0].email.should.equal(email)
           done()
     it "should retrieve facebook user when existing", (done) ->
       User.findOrCreateFaceBookUser profile, (err, user) ->
@@ -69,5 +84,5 @@ describe "user", ->
           assert.deepEqual userId, user._id
           User.find {}, (err, users) ->
             users.length.should.equal(1)
-            users[0].facebook.email.should.equal(email)
+            users[0].email.should.equal(email)
             done()

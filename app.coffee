@@ -53,7 +53,7 @@ app.configure "production", ->
 app.use (req, res, next) ->
   res.status 404
   if req.accepts("html")
-    res.render "404",
+    res.render "error/404",
       url: req.url
 
     return
@@ -64,7 +64,7 @@ app.use (req, res, next) ->
 
 app.use (err, req, res, next) ->
   res.status err.status or 500
-  res.render "500",
+  res.render "error/500",
     error: err
 
 

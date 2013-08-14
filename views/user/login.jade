@@ -1,10 +1,11 @@
-extends layout
+extends ../layout
 
 block content
     section
         form.form-horizontal(method="POST", action="/login")
             fieldset
                 legend Log In
+                    a.btn.pull-right(href="/forgot/password") Forgot Password
                 .control-group
                     label.control-label(for='email') Email
                     .controls
