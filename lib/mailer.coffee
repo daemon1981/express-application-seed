@@ -1,28 +1,56 @@
-nodemailer = require "nodemailer"
-config     = require "config"
+config         = require "config"
+nodemailer     = require "nodemailer"
+emailTemplates = require('email-templates');
 
-smtpTransport = nodemailer.createTransport("Sendmail")
+templatesDir   = require('path').join(__dirname, '../templates/emails')
+smtpTransport  = nodemailer.createTransport("Sendmail")
 
-# send mail with defined transport object
-sendMail = (mailOptions) ->
-  smtpTransport.sendMail mailOptions, (error, response) ->
-    if error
-      console.log error
-    else
-      console.log "Message sent: " + response.message
+module.exports = ->
+  self = this
 
-exports.sendSinupConfirmation = (email) ->
-  sendMail
-    from: config.mailer.sender['no-reply']
-    to: email
-    subject: "Welcome to Super Site !"
-    text: "Welcome to Super Site ! Hope you'll enjoy it"
-    html: "<p>Welcome to Super Site ! Hope you'll enjoy it</p>"
+  # send mail with defined transport object
+  this.sendMail = (mailOptions, callback) ->
+    smtpTransport.sendMail mailOptions, (err, response) ->
+      return callback(err) if err
+      callback(err, response)
 
-exports.sendForgotPassword = (email, url) ->
-  sendMail
-    from: config.mailer.sender['no-reply']
-    to: email
-    subject: "Reset your password"
-    text: "Reset your password going to this " + url
-    html: '<p>Reset your password by clicking here <a href="' + url + '">url<a></p><p>or copy and paste this url: ' + url + '</p>'
+  this.sendSignupConfirmation = (email, callback) ->
+    emailTemplates templatesDir, (err, template) ->
+      return callback(err) if err
+      template "signup", {}, (err, html, text) ->
+        return callback(err) if err
+        self.sendMail
+          from: config.mailer.sender['no-reply']
+          to: email
+          subject: "Welcome to Super Site !"
+          text: text
+          html: html
+        , callback
+
+  this.sendForgotPassword = (email, url, callback) ->
+    emailTemplates templatesDir, (err, template) ->
+      return callback(err) if err
+      template "forgotPassword", url: url, (err, html, text) ->
+        return callback(err) if err
+        self.sendMail
+          from: config.mailer.sender['no-reply']
+          to: email
+          subject: "Reset your password"
+          text: text
+          html: html
+        , callback
+
+  this.sendPasswordReseted = (email, url, callback) ->
+    emailTemplates templatesDir, (err, template) ->
+      return callback(err) if err
+      template "passwordReseted", { url: url, email: email}, (err, html, text) ->
+        return callback(err) if err
+        self.sendMail
+          from: config.mailer.sender['no-reply']
+          to: email
+          subject: "Your password has been reseted"
+          text: text
+          html: html
+        , callback
+
+  return

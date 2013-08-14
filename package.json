@@ -27,6 +27,7 @@
     , "pwd": "0.0.2"
   },
   "devDependencies": {
-    "should": "1.2.2"
+    "should": "1.2.2",
+    "sinon": "v1.7.3"
   }
 }

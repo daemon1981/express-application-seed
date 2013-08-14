@@ -1,7 +1,9 @@
 passport = require("passport")
 
 User = require("../model/user")
-mailer = require("../lib/mailer")
+Mailer = require("../lib/mailer")
+
+mailer = new Mailer()
 
 module.exports = (app) ->
   # Helpers
@@ -43,10 +45,11 @@ module.exports = (app) ->
   app.post "/signup", userExist, (req, res, next) ->
     User.signup req.body.email, req.body.password, (err, user) ->
       return next(err) if err
-      mailer.sendSinupConfirmation(user.email)
-      req.login user, (err) ->
-        return next(err)  if err
-        res.redirect "/profile"
+      mailer.sendSignupConfirmation user.email, (err, response) ->
+        return next(err) if err
+        req.login user, (err) ->
+          return next(err)  if err
+          res.redirect "/profile"
 
   app.get "/forgot/password", (req, res, next) ->
     res.render "user/forgotPassword"
@@ -57,10 +60,11 @@ module.exports = (app) ->
       if !user
         return res.render "user/forgotPassword", email: req.body.email, warningMessage: 'Email was not found'
       user.requestResetPassword (err, user) ->
-        next(err) if err
+        return next(err) if err
         url = 'http://' + req.host + '/reset/password?key=' + user.regeneratePasswordKey
-        mailer.sendForgotPassword(user.email, url)
-        res.render "user/forgotPassword", successMessage: 'We\'ve sent to you a email. Check your mail box.'
+        mailer.sendForgotPassword user.email, url, (err, response) ->
+          return next(err) if err
+          res.render "user/forgotPassword", successMessage: 'We\'ve sent to you a email. Check your mail box.'
 
   app.get "/reset/password", (req, res, next) ->
     User.findOne regeneratePasswordKey: req.query.key, (err, user) ->
@@ -79,7 +83,12 @@ module.exports = (app) ->
       if req.body.password
         user.updatePassword req.body.password, (err) ->
           return next(err) if err
-          res.render "user/resetPassword", successMessage: 'Your password has been updated. Please login again.'
+          user.requestResetPassword (err, user) ->
+            return next(err) if err
+            url = 'http://' + req.host + '/reset/password?key=' + user.regeneratePasswordKey
+            mailer.sendPasswordReseted user.email, url, (err, response) ->
+              return next(err) if err
+              res.render "user/resetPassword", successMessage: 'Your password has been updated. Please login again.'
 
   app.get "/auth/facebook", passport.authenticate("facebook",
     scope: "email"
