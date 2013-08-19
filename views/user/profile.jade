@@ -1,5 +1,29 @@
 extends ../layout
 
+block append links
+    link(rel='stylesheet', href='jQuery-File-Upload/css/jquery.fileupload-ui.css')
+
+block append scripts
+    script(src="jQuery-File-Upload/js/vendor/jquery.ui.widget.js")
+    script(src="jQuery-File-Upload/js/jquery.iframe-transport.js")
+    script(src="jQuery-File-Upload/js/jquery.fileupload.js")
+    script(src='/javascripts/profile.js')
+
 block content
     section
-        h1 Welcome !
+        form.form-horizontal(method="POST", action="/profile")
+            fieldset
+                legend Profile
+                    a.btn.pull-right(href="/forgot/password") Modify your password
+                .control-group
+                    label.control-label(for='firstName') First name
+                    .controls
+                        input#firstName(type='text', name='firstName', placeholder="First name")
+                .control-group
+                    label.control-label(for='lastName') Last name
+                    .controls
+                        input#lastName(type='text', name='lastName', placeholder="Last name")
+                input#fileupload(type="file", name="files[]", data-url="/upload", multiple)
+                #files.files
+                .control-group
+                    input.btn(type="submit", value="Sauvegarder")

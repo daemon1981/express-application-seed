@@ -101,6 +101,9 @@ module.exports = (app) ->
     res.render "user/profile",
       user: req.user
 
+  app.post "/profile", isAuthenticated, (req, res) ->
+    res.redirect "user/profile"
+
   app.get "/logout", (req, res) ->
     req.logout()
     res.redirect "/login"
