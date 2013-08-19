@@ -83,12 +83,10 @@ module.exports = (app) ->
       if req.body.password
         user.updatePassword req.body.password, (err) ->
           return next(err) if err
-          user.requestResetPassword (err, user) ->
+          url = 'http://' + req.host + '/forgot/password'
+          mailer.sendPasswordReseted user.email, url, (err, response) ->
             return next(err) if err
-            url = 'http://' + req.host + '/reset/password?key=' + user.regeneratePasswordKey
-            mailer.sendPasswordReseted user.email, url, (err, response) ->
-              return next(err) if err
-              res.render "user/resetPassword", successMessage: 'Your password has been updated. Please login again.'
+            res.render "user/resetPassword", successMessage: 'Your password has been updated. Please login again.'
 
   app.get "/auth/facebook", passport.authenticate("facebook",
     scope: "email"
