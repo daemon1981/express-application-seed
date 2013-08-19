@@ -25,6 +25,7 @@
     , "email-templates": "*"
     , "nodemailer": "v0.5.2"
     , "pwd": "0.0.2"
+    , "connect-redis": "1.4.5"
   },
   "devDependencies": {
     "should": "1.2.2",

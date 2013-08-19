@@ -3,13 +3,14 @@ require './bootstrap'
 ###
 Module dependencies.
 ###
-express  = require 'express'
-config   = require 'config'
-http     = require 'http'
-path     = require 'path'
-i18n     = require "i18n"
-passport = require 'passport'
-flash    = require 'connect-flash'
+express    = require 'express'
+config     = require 'config'
+http       = require 'http'
+path       = require 'path'
+i18n       = require "i18n"
+passport   = require 'passport'
+flash      = require 'connect-flash'
+RedisStore = require('connect-redis')(express)
 
 app = express()
 
@@ -27,7 +28,7 @@ app.configure ->
   app.use express.logger("dev")
   app.use express.cookieParser()
   app.use express.bodyParser()
-  app.use express.session(secret: "keyboard cat")
+  app.use express.session({ store: new RedisStore(config.Redis), secret: "keyboard cat" })
   app.use passport.initialize()
   app.use passport.session()
   app.use express.methodOverride()

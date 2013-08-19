@@ -3,6 +3,9 @@
     "dbUris": ["mongodb://127.0.0.1:27017/node-plinth"],
     "options": {}
   },
+  "Redis": {
+    "port": 6379
+  },
   "menu": {
     "submenufields": {
       "label": "Sub Menu Fields",
