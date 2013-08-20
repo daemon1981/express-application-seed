@@ -2,3 +2,4 @@ node_modules
 components
 locales/*.js
 public/uploads/*
+uploads/*

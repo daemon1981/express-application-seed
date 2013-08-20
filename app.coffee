@@ -11,20 +11,10 @@ i18n       = require "i18n"
 passport   = require 'passport'
 flash      = require 'connect-flash'
 RedisStore = require('connect-redis')(express)
-upload     = require 'jquery-file-upload-middleware'
 
 app = express()
 
 require './passport-bootstrap'
-
-# configure upload middleware
-upload.configure
-  uploadDir: __dirname + "/public/uploads"
-  uploadUrl: "/uploads"
-  imageVersions:
-    thumbnail:
-      width: 80
-      height: 80
 
 app.configure ->
   app.set "port", process.env.PORT or 3000
@@ -37,22 +27,18 @@ app.configure ->
   app.use express.favicon()
   app.use express.logger("dev")
   app.use express.cookieParser()
+  # app.use express.limit('4M')
+  app.use express.bodyParser
+    keepExtensions: true
+    uploadDir: __dirname + '/uploads'
   app.use express.session({ store: new RedisStore(config.Redis), secret: "keyboard cat" })
-  app.use '/upload', (req, res, next) ->
-    return next(new Error('Only identified user can upload files')) if !req.session.passport.user
-    upload.fileHandler(
-      uploadDir: ->
-        __dirname + "/public/uploads/" + req.session.passport.user
-      uploadUrl: ->
-        "/uploads/" + req.session.passport.user
-    ) req, res, next
-  app.use express.bodyParser()
   app.use passport.initialize()
   app.use passport.session()
   app.use express.methodOverride()
   app.use flash()
   app.use app.router
   app.use express.static(path.join(__dirname, "public"))
+  app.use express.static(path.join(__dirname, "uploads"))
   app.use require("less-middleware")(src: __dirname + "/public")
 
 i18n.setLocale "fr"
