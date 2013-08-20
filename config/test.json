@@ -2,5 +2,15 @@
   "Mongo": {
     "dbUris": ["mongodb://127.0.0.1:27017/node-plinth-test"],
     "options": {}
+  },
+  "Upload": {
+    "minFileSize": 1,
+    "maxFileSize": 2000000, // 2 MB
+    "imageVersions": {
+        "thumbnail": {
+            "width": 80,
+            "height": 80
+        }
+    }
   }
 }

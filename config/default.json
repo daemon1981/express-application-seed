@@ -6,6 +6,16 @@
   "Redis": {
     "port": 6379
   },
+  "Upload": {
+    "minFileSize": 1,
+    "maxFileSize": 2000000, // 2 MB
+    "imageVersions": {
+        "thumbnail": {
+            "width": 80,
+            "height": 80
+        }
+    }
+  },
   "menu": {
     "submenufields": {
       "label": "Sub Menu Fields",
