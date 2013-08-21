@@ -1,9 +1,27 @@
-passport = require("passport")
+passport = require "passport"
+config   = require "config"
 
-User = require("../model/user")
-Mailer = require("../lib/mailer")
+User     = require("../model/user")
+Mailer   = require("../lib/mailer")
+Image    = require("../lib/image")
 
+image  = new Image(config.Upload)
 mailer = new Mailer()
+
+handleResult = (result, redirect) ->
+  if redirect
+    res.writeHead 302,
+      Location: redirect.replace(/%s/, encodeURIComponent(JSON.stringify(result)))
+    res.end()
+  else
+    res.writeHead 200,
+      "Content-Type": (if req.headers.accept.indexOf("application/json") isnt -1 then "application/json" else "text/plain")
+    res.end JSON.stringify(result)
+
+setNoCacheHeaders = ->
+  res.setHeader "Pragma", "no-cache"
+  res.setHeader "Cache-Control", "no-store, no-cache, must-revalidate"
+  res.setHeader "Content-Disposition", "inline; filename=\"files.json\""
 
 module.exports = (app) ->
   # Helpers
@@ -100,6 +118,24 @@ module.exports = (app) ->
   app.get "/profile", isAuthenticated, (req, res) ->
     res.render "user/profile",
       user: req.user
+
+  app.post "/profile", isAuthenticated, (req, res) ->
+    res.redirect "user/profile"
+
+  app.post "/profile-picture", isAuthenticated, (req, res, next) ->
+    image.saveUserPicture req.user, req.files.picture, (err, pictureInfo) ->
+      return next(err) if err
+      baseUrl = ((if config.Upload.sslEnabled then "https:" else "http:")) + "//" + req.host + '/'
+      res.json files: [
+        name: pictureInfo.name
+        size: pictureInfo.size
+        thumbnailUrl: baseUrl + pictureInfo.thumbnailUrl
+        type: pictureInfo.type
+        url:  baseUrl + pictureInfo.url
+      ]
+
+  app.delete "/profile-picture", isAuthenticated, (req, res, next) ->
+    image.destroyUserPicture req.user
 
   app.get "/logout", (req, res) ->
     req.logout()

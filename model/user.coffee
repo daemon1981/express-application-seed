@@ -9,6 +9,7 @@ UserSchema = new Schema(
   lastName:     String
   email:        type: String, required: true
   salt:         type: String
+  picture:      String
   passwordHash: String
   facebook:
     id:       String

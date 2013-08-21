@@ -6,7 +6,21 @@
   "Redis": {
     "port": 6379
   },
+  "Upload": {
+    "minFileSize": 1,
+    "maxFileSize": 2000000, // 2 MB
+    "imageVersions": {
+        "thumbnail": {
+            "width": 80,
+            "height": 80
+        }
+    }
+  },
   "menu": {
+    "profile": {
+      "url": "/profile",
+      "label": "Profile"
+    },
     "submenufields": {
       "label": "Sub Menu Fields",
       "child": {
@@ -20,7 +34,7 @@
         }
       }
     },
-    "One Menu Field": {
+    "OneOtherMenuField": {
       "url": "/element/url",
       "label": "Element"
     }

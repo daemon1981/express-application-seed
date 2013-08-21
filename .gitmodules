@@ -1,3 +1,6 @@
 [submodule "public/twitter-bootstrap"]
 	path = public/twitter-bootstrap
 	url = https://github.com/twbs/bootstrap.git
+[submodule "public/jQuery-File-Upload"]
+	path = public/jQuery-File-Upload
+	url = https://github.com/blueimp/jQuery-File-Upload.git
