@@ -126,12 +126,13 @@ module.exports = (app) ->
     image.saveUserPicture req.user, req.files.picture, (err, pictureInfo) ->
       return next(err) if err
       baseUrl = ((if config.Upload.sslEnabled then "https:" else "http:")) + "//" + req.host + '/'
-      res.send
+      res.json files: [
         name: pictureInfo.name
         size: pictureInfo.size
         thumbnailUrl: baseUrl + pictureInfo.thumbnailUrl
         type: pictureInfo.type
         url:  baseUrl + pictureInfo.url
+      ]
 
   app.delete "/profile-picture", isAuthenticated, (req, res, next) ->
     image.destroyUserPicture req.user

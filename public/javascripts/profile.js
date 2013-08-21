@@ -2,9 +2,9 @@ $(function () {
     $('#fileupload').fileupload({
         dataType: 'json',
         done: function (e, data) {
-            $.each(data.result.picture, function (index, file) {
-                $('<p/>').text(file.name).appendTo(document.body);
-            });
+            if (data.result && data.result.files && data.result.files[0]) {
+                $('img.picture').attr('src', data.result.files[0].thumbnailUrl);
+            }
         }
     });
 });

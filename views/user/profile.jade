@@ -16,14 +16,21 @@ block content
                 legend Profile
                     a.btn.pull-right(href="/forgot/password") Modify your password
                 .control-group
+                    label.control-label(for='picture') Picture
+                    .controls
+                        - if (user.picture)
+                            img.img-polaroid.picture(src="/user/"+user._id+"/picture/thumbnail/" + user.picture)
+                        - else
+                            img.img-polaroid(src="/user/default/picture/thumbnail/default.png")
+                        input#fileupload(type="file", name="picture", data-url="/profile-picture")
+                .control-group
                     label.control-label(for='firstName') First name
                     .controls
-                        input#firstName(type='text', name='firstName', placeholder="First name")
+                        input#firstName(type='text', name='firstName', placeholder="First name", value=user.firstName)
                 .control-group
                     label.control-label(for='lastName') Last name
                     .controls
-                        input#lastName(type='text', name='lastName', placeholder="Last name")
-                input#fileupload(type="file", name="picture", data-url="/profile-picture")
+                        input#lastName(type='text', name='lastName', placeholder="Last name", value=user.lastName)
                 #files.files
                 .control-group
                     input.btn(type="submit", value="Sauvegarder")
