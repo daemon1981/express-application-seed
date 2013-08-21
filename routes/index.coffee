@@ -115,12 +115,14 @@ module.exports = (app) ->
     res.render "user/profile",
       user: req.user
 
-  app.get "/profile", isAuthenticated, (req, res) ->
+  app.get "/profile", isAuthenticated, (req, res, next) ->
     res.render "user/profile",
       user: req.user
 
-  app.post "/profile", isAuthenticated, (req, res) ->
-    res.redirect "user/profile"
+  app.post "/profile", isAuthenticated, (req, res, next) ->
+    User.update { _id: req.user._id }, req.body, (err) ->
+      next(err) if err
+      res.redirect "/profile"
 
   app.post "/profile-picture", isAuthenticated, (req, res, next) ->
     image.saveUserPicture req.user, req.files.picture, (err, pictureInfo) ->
