@@ -61,14 +61,15 @@ describe "image", ->
     it "should create user directories", (done) ->
       image.createUserDir userTest, testDir, (err) ->
         should.not.exists err
-        fs.exists testDir + '/' + userTest._id + '/picture/thumbnail', (exists) ->
+        fs.exists testDir + '/user/' + userTest._id + '/picture/thumbnail', (exists) ->
           assert.ok exists
           done()
 
   describe "#saveUserPicture()", ->
     userTest = {}
     testDir  = '/tmp/test-createUserDir'
-    filePath = testDir + '/homer.jpg'
+    fileName = 'homer.jpg'
+    filePath = testDir + '/' + fileName
 
     before (done) ->
       User.findOne {email: userEmail}, (err, user) ->
@@ -77,19 +78,36 @@ describe "image", ->
           if exists
             exec 'rm -r ' + testDir, (err) ->
               fs.mkdir testDir, (err) ->
-                exec 'cp ' + __dirname + '/homer.jpg ' + testDir, done
+                exec 'cp ' + __dirname + '/' + fileName + ' ' + testDir, done
           else
             fs.mkdir testDir, (err) ->
-              exec 'cp ' + __dirname + '/homer.jpg ' + testDir, done
+              exec 'cp ' + __dirname + '/' + fileName + ' ' + testDir, done
 
     it "should save image in user directories", (done) ->
-      image.saveUserPicture userTest, { size: 30, name: 'homer.jpg', path: filePath }, (err) ->
+      file =
+        size: 30
+        name: fileName
+        path: filePath
+        type: 'image/jpeg'
+      image.saveUserPicture userTest, file, (err, pictureInfo) ->
         should.not.exists err
+        expectedPictureInfo =
+          name: file.name
+          size: file.size
+          thumbnailUrl: 'user/'+userTest._id+'/picture/thumbnail/homer.jpg'
+          type: file.type
+          url:  'user/'+userTest._id+'/picture/thumbnail/homer.jpg'
+        assert.deepEqual expectedPictureInfo, pictureInfo
         checkExists = (file, next) ->
           fs.exists file, (exists) ->
             assert.ok exists, file + ' doesn\'t exist'
             next()
         async.eachSeries [
-          testDir + '/' + userTest._id + '/picture/thumbnail'
-        , testDir + '/' + userTest._id + '/picture/thumbnail/homer.jpg'
-        ], checkExists, done
+          testDir + '/user/' + userTest._id + '/picture/thumbnail'
+        , testDir + '/user/' + userTest._id + '/picture/thumbnail/homer.jpg'
+        ], checkExists, (err) ->
+          should.not.exists err
+          User.findOne {email: userEmail}, (err, user) ->
+            should.not.exists err
+            assert.equal fileName, user.picture
+            done()

@@ -28,26 +28,36 @@ Image = (config) ->
         self.saveUserPictureVersions user, rootPath, file.path, callback
       unlink: (callback) ->
         fs.unlink file.path, callback
-    , callback
+    , (err) ->
+      return callback(err) if err
+      callback null,
+        name: file.name
+        size: file.size
+        thumbnailUrl: self.getVersionPath(user, 'thumbnail', rootPath) + '/' + path.basename(file.path)
+        type: file.type
+        url:  self.getVersionPath(user, 'thumbnail', rootPath) + '/' + path.basename(file.path)
 
   @createUserDir = (user, rootPath, callback) ->
     mkVersionDir = (version, next) ->
-      exec 'mkdir -p ' + self.getVersionPath(user, version, rootPath), next
+      exec 'mkdir -p ' + rootPath + '/' + self.getVersionPath(user, version, rootPath), next
     async.eachSeries Object.keys(config.imageVersions), mkVersionDir, callback
 
   @getVersionPath = (user, version, rootPath) ->
-    rootPath + '/' + user._id + '/picture' + '/' + version
+    'user/' + user._id + '/picture' + '/' + version
 
   @saveUserPictureVersions = (user, rootPath, filePath, callback) ->
-    Object.keys(config.imageVersions).forEach (version) ->
+    saveUserPictureVersion = (version, callback) ->
       opts = config.imageVersions[version]
-      user.picture[version] = path.basename(filePath)
       imagemagick.resize
         width: opts.width
         height: opts.height
         srcPath: filePath
-        dstPath: self.getVersionPath(user, version, rootPath) + '/' + path.basename(filePath)
+        dstPath: rootPath + '/' + self.getVersionPath(user, version, rootPath) + '/' + path.basename(filePath)
       , callback
+    async.eachSeries Object.keys(config.imageVersions), saveUserPictureVersion, (err) ->
+      return callback(err) if err
+      user.picture = path.basename(filePath)
+      user.save callback
 
   @initUrls = (host) ->
     self = this

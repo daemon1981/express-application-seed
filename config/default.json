@@ -17,6 +17,10 @@
     }
   },
   "menu": {
+    "profile": {
+      "url": "/profile",
+      "label": "Profile"
+    },
     "submenufields": {
       "label": "Sub Menu Fields",
       "child": {
@@ -30,7 +34,7 @@
         }
       }
     },
-    "One Menu Field": {
+    "OneOtherMenuField": {
       "url": "/element/url",
       "label": "Element"
     }
