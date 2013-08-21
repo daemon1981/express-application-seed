@@ -2,10 +2,13 @@ require '../../../bootstrap.coffee'
 
 assert       = require 'assert'
 should       = require 'should'
+async        = require 'async'
 sinon        = require 'sinon'
 config       = require 'config'
 mongoose     = require 'mongoose'
 fixtures     = require 'pow-mongoose-fixtures'
+fs           = require 'fs'
+exec         = require('child_process').exec
 
 Image       = require "../../../lib/image"
 User        = require "../../../model/user"
@@ -43,12 +46,50 @@ describe "image", ->
 
   describe "#createUserDir()", ->
     userTest = {}
+    testDir  = '/tmp/test-createUserDir'
 
     before (done) ->
       User.findOne {email: userEmail}, (err, user) ->
         userTest = user
-        unlink __dirname + '/' + user.id
-    it.only "plop", (done) ->
-      image.createUserDir user, __dirname, (err) ->
+        fs.exists testDir, (exists) ->
+          if exists
+            exec 'rm -r ' + testDir, (err) ->
+              fs.mkdir testDir, done
+          else
+            fs.mkdir testDir, done
+
+    it "should create user directories", (done) ->
+      image.createUserDir userTest, testDir, (err) ->
         should.not.exists err
-        done()
+        fs.exists testDir + '/' + userTest._id + '/picture/thumbnail', (exists) ->
+          assert.ok exists
+          done()
+
+  describe "#saveUserPicture()", ->
+    userTest = {}
+    testDir  = '/tmp/test-createUserDir'
+    filePath = testDir + '/homer.jpg'
+
+    before (done) ->
+      User.findOne {email: userEmail}, (err, user) ->
+        userTest = user
+        fs.exists testDir, (exists) ->
+          if exists
+            exec 'rm -r ' + testDir, (err) ->
+              fs.mkdir testDir, (err) ->
+                exec 'cp ' + __dirname + '/homer.jpg ' + testDir, done
+          else
+            fs.mkdir testDir, (err) ->
+              exec 'cp ' + __dirname + '/homer.jpg ' + testDir, done
+
+    it "should save image in user directories", (done) ->
+      image.saveUserPicture userTest, { size: 30, name: 'homer.jpg', path: filePath }, (err) ->
+        should.not.exists err
+        checkExists = (file, next) ->
+          fs.exists file, (exists) ->
+            assert.ok exists, file + ' doesn\'t exist'
+            next()
+        async.eachSeries [
+          testDir + '/' + userTest._id + '/picture/thumbnail'
+        , testDir + '/' + userTest._id + '/picture/thumbnail/homer.jpg'
+        ], checkExists, done

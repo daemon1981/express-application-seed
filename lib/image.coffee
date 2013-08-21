@@ -3,6 +3,7 @@ _existsSync = fs.existsSync || path.existsSync
 imagemagick = require 'imagemagick'
 path        = require 'path'
 async       = require 'async'
+exec        = require('child_process').exec
 
 Image = (config) ->
   self = this
@@ -17,36 +18,36 @@ Image = (config) ->
     callback null
 
   @saveUserPicture = (user, file, callback) ->
-    rootPath = path.dirname(file.path) + '/' + user._id + '/picture'
+    rootPath = path.dirname(file.path)
     async.series
       validate: (callback) ->
         self.validate file, callback
-      createUserDirIfNotExists: (callback) ->
-        fs.exists rootPath, (exists) ->
-          if exists then self.createUserDir user, rootPath, callback else callback
+      createUserDir: (callback) ->
+        self.createUserDir user, rootPath, callback
       saveUserPictureVersions: (callback) ->
-        self.saveUserPictureVersions user, file callback
+        self.saveUserPictureVersions user, rootPath, file.path, callback
       unlink: (callback) ->
         fs.unlink file.path, callback
     , callback
 
   @createUserDir = (user, rootPath, callback) ->
-    fs.mkdir rootPath, (err) ->
-      return callback(err) if err
-      mkVersionDir = (version) ->
-        fs.mkdir rootPath + '/' + user._id + '/picture/' + version
-      async.eachSeries Object.keys(config.imageVersions), mkVersionDir, callback
+    mkVersionDir = (version, next) ->
+      exec 'mkdir -p ' + self.getVersionPath(user, version, rootPath), next
+    async.eachSeries Object.keys(config.imageVersions), mkVersionDir, callback
 
-  @saveUserPictureVersions = (user, file, callback) ->
+  @getVersionPath = (user, version, rootPath) ->
+    rootPath + '/' + user._id + '/picture' + '/' + version
+
+  @saveUserPictureVersions = (user, rootPath, filePath, callback) ->
     Object.keys(config.imageVersions).forEach (version) ->
-        opts = config.imageVersions[version]
-        user.picture[version] = path.basename(file.path)
-        imagemagick.resize
-          width: opts.width
-          height: opts.height
-          srcPath: file.path
-          dstPath: path.dirname(file.path) + '/' + user._id + '/picture/' + version + '/' + path.basename(file.path)
-        , callback
+      opts = config.imageVersions[version]
+      user.picture[version] = path.basename(filePath)
+      imagemagick.resize
+        width: opts.width
+        height: opts.height
+        srcPath: filePath
+        dstPath: self.getVersionPath(user, version, rootPath) + '/' + path.basename(filePath)
+      , callback
 
   @initUrls = (host) ->
     self = this
