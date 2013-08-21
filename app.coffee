@@ -27,7 +27,10 @@ app.configure ->
   app.use express.favicon()
   app.use express.logger("dev")
   app.use express.cookieParser()
-  app.use express.bodyParser()
+  # app.use express.limit('4M')
+  app.use express.bodyParser
+    keepExtensions: true
+    uploadDir: __dirname + '/uploads'
   app.use express.session({ store: new RedisStore(config.Redis), secret: "keyboard cat" })
   app.use passport.initialize()
   app.use passport.session()
@@ -35,6 +38,7 @@ app.configure ->
   app.use flash()
   app.use app.router
   app.use express.static(path.join(__dirname, "public"))
+  app.use express.static(path.join(__dirname, "uploads"))
   app.use require("less-middleware")(src: __dirname + "/public")
 
 i18n.setLocale "fr"
