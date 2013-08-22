@@ -1,20 +1,15 @@
 extends ../layout
 
 block content
-    section
-        form.form-horizontal(method="POST", action="/login")
-            fieldset
-                legend Log In
-                    a.btn.pull-right(href="/forgot/password") Forgot Password
-                .control-group
-                    label.control-label(for='email') Email
-                    .controls
-                        input#email(type='text', name='email', placeholder="Email")
-                .control-group
-                    label.control-label(for='password') Password
-                    .controls
-                        input#password(type='password', name='password', placeholder="Password")
-                .control-group
-                    input.btn(type="submit", value="Log In")
-                .control-group
-                    a.btn.btn-primary(href="/auth/facebook") Log In With Facebook
+    form.form-login(method="POST", action="/login")
+        h2.form-login-heading Log In
+        input.form-control#email(type='text', name='email', placeholder="Email")
+        input.form-control#password(type='password', name='password', placeholder="Password")
+        label.checkbox
+            input(type="checkbox", value="remember-me")
+            | Remember me
+        input.btn.btn-lg.btn-primary.btn-block(type="submit", value="Log In")
+        hr
+        a.pull-right(href="/forgot/password") Forgot Password
+    .form-login
+        a.btn.btn-primary(href="/auth/facebook") Log In With Facebook
