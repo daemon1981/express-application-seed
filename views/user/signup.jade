@@ -1,17 +1,8 @@
 extends ../layout
 
 block content
-    section
-        form.form-horizontal(id="singup", method="POST", action="/signup")
-            fieldset
-                legend Inscription
-                .control-group
-                    label.control-label(for='email') Email
-                    .controls
-                        input#email(type='text', name='email', placeholder="Email")
-                .control-group
-                    label.control-label(for='password') Password
-                    .controls
-                        input#password(type='password', name='password', placeholder="Password")
-                .control-group
-                    input.btn(type="submit", value="Sing UP")
+    form.form-signup(method="POST", action="/signup")
+        h2.form-signup-heading Sign up
+        input.form-control#email(type='text', name='email', placeholder="Email")
+        input.form-control#password(type='password', name='password', placeholder="Password")
+        input.btn.btn-lg.btn-primary.btn-block(type="submit", value="Sign up")

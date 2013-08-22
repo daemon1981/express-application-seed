@@ -1,11 +1,12 @@
-a.brand(href="/") Super Site !
-button.btn.btn-navbar(type="button", data-toggle="collapse", data-target=".nav-collapse")
-    span.icon-bar
-    span.icon-bar
-    span.icon-bar
-div#main-menu.nav-collapse.collapse
+.navbar-header
+    button.navbar-toggle(type="button", data-toggle="collapse", data-target=".navbar-collapse")
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+    a.navbar-brand(href="/") Super Site !
+div#main-menu.navbar-collapse.collapse
     if user
-        ul.nav
+        ul.nav.navbar-nav
             each data, section in menu
                 - var activeClass = '';
                 - var navClass = '';
@@ -24,8 +25,8 @@ div#main-menu.nav-collapse.collapse
                     else
                         a(href="#{data.url}") #{__i(data.label)}
         ul.nav.pull-right
-            a.btn(href="/logout"): i.icon-off
+            a.btn.btn-danger.navbar-btn(href="/logout"): i.glyphicon.glyphicon-log-out
     else
-        ul.nav.pull-right
-            a.btn(href="/signup") SignUp
-            a.btn(href="/login")  LogIn
+        ul.nav.navbar-nav.pull-right
+            a.btn.btn-default.navbar-btn(href="/signup") SignUp
+            a.btn.btn-default.navbar-btn(href="/login")  LogIn

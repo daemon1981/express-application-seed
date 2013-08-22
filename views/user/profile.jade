@@ -10,32 +10,28 @@ block append scripts
     script(src='/javascripts/profile.js')
 
 block content
-    section
-        form.form-horizontal(method="POST", action="/profile")
-            fieldset
-                legend Profile
-                    a.btn.pull-right(href="/forgot/password") Modify your password
-                .control-group
-                    .controls
-                        - if (user.picture)
-                            img.img-polaroid.picture(src="/user/"+user._id+"/picture/thumbnail/" + user.picture)
-                        - else
-                            img.img-polaroid(src="/user/default/picture/thumbnail/default.png")
-                .control-group
-                    label.control-label(for='picture') Picture
-                    .controls
-                        span.btn.btn-success.fileinput-button
-                            i.glyphicon.glyphicon-plus
-                            span Select a picture
-                            input#fileupload(type="file", name="picture", data-url="/profile-picture")
-                .control-group
-                    label.control-label(for='firstName') First name
-                    .controls
-                        input#firstName(type='text', name='firstName', placeholder="First name", value=user.firstName)
-                .control-group
-                    label.control-label(for='lastName') Last name
-                    .controls
-                        input#lastName(type='text', name='lastName', placeholder="Last name", value=user.lastName)
-                #files.files
-                .control-group
-                    input.btn(type="submit", value="Sauvegarder")
+    form.form-horizontal(method="POST", action="/profile", role="form")
+        a.btn.btn-warning.pull-right(href="/forgot/password") Modify your password
+        .form-group
+            label.control-label.col-lg-2 Picture
+            .col-lg-6
+                - if (user.picture)
+                    img.img-polaroid.picture(src="/user/"+user._id+"/picture/thumbnail/" + user.picture)
+                - else
+                    img.img-polaroid(src="/user/default/picture/thumbnail/default.png")
+        .form-group
+            .col-lg-6.col-lg-offset-2
+                span.btn.btn-success.fileinput-button
+                    i.glyphicon.glyphicon-plus
+                    span Select a picture
+                    input#fileupload(type="file", name="picture", data-url="/profile-picture")
+        .form-group
+            label.control-label.col-lg-2(for='firstName') First name
+            .col-lg-6
+                input#firstName.form-control(type='text', name='firstName', placeholder="First name", value=user.firstName)
+        .form-group
+            label.control-label.col-lg-2(for='lastName') Last name
+            .col-lg-6
+                input#lastName.form-control(type='text', name='lastName', placeholder="Last name", value=user.lastName)
+        .control-group
+            input.btn.btn-default(type="submit", value="Sauvegarder")

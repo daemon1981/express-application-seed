@@ -54,7 +54,7 @@ module.exports = (app) ->
     res.render "user/login"
 
   app.post "/login", passport.authenticate("local",
-    successRedirect: "/"
+    successRedirect: "/profile"
     failureRedirect: "/login"
   )
   app.get "/signup", (req, res) ->
