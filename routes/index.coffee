@@ -23,7 +23,7 @@ module.exports = (app) ->
       if count is 0
         next()
       else
-        res.redirect "/singup"
+        res.redirect "/signup"
 
   # Routes
   app.get "/", (req, res) ->
