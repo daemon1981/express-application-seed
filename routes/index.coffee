@@ -8,21 +8,6 @@ Image    = require("../lib/image")
 image  = new Image(config.Upload)
 mailer = new Mailer()
 
-handleResult = (result, redirect) ->
-  if redirect
-    res.writeHead 302,
-      Location: redirect.replace(/%s/, encodeURIComponent(JSON.stringify(result)))
-    res.end()
-  else
-    res.writeHead 200,
-      "Content-Type": (if req.headers.accept.indexOf("application/json") isnt -1 then "application/json" else "text/plain")
-    res.end JSON.stringify(result)
-
-setNoCacheHeaders = ->
-  res.setHeader "Pragma", "no-cache"
-  res.setHeader "Cache-Control", "no-store, no-cache, must-revalidate"
-  res.setHeader "Content-Disposition", "inline; filename=\"files.json\""
-
 module.exports = (app) ->
   # Helpers
   isAuthenticated = (req, res, next) ->
