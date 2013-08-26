@@ -116,6 +116,11 @@ UserSchema.methods.updatePassword = (password, done) ->
     self.regeneratePasswordDate = null
     self.save done
 
+UserSchema.methods.getName = () ->
+  if !this.firstName or !this.firstName
+    return this.email
+  return this.firstName + ' ' + this.lastName
+
 User = mongoose.model "User", UserSchema
 
 module.exports = User

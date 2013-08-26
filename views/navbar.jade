@@ -24,7 +24,10 @@ div#main-menu.navbar-collapse.collapse
                                     a(href="#{dataChild.url}") #{__i(dataChild.label)}
                     else
                         a(href="#{data.url}") #{__i(data.label)}
-        ul.nav.pull-right
+        p.nav.pull-right
+            | Signed in as
+            a(href="/profile", class="navbar-link")= user.getName()
+            | &nbsp;
             a.btn.btn-danger.navbar-btn(href="/logout"): i.glyphicon.glyphicon-log-out
     else
         ul.nav.navbar-nav.pull-right
