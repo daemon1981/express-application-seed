@@ -14,10 +14,23 @@ module.exports = ->
       return callback(err) if err
       callback(err, response)
 
-  this.sendSignupConfirmation = (email, callback) ->
+  this.sendSignupConfirmation = (email, validatationUrl, callback) ->
     emailTemplates templatesDir, (err, template) ->
       return callback(err) if err
-      template "signup", {}, (err, html, text) ->
+      template "signup", {url: validatationUrl}, (err, html, text) ->
+        return callback(err) if err
+        self.sendMail
+          from: config.mailer.sender['no-reply']
+          to: email
+          subject: "Please validate your account"
+          text: text
+          html: html
+        , callback
+
+  this.sendAccountValidatedConfirmation = (email, callback) ->
+    emailTemplates templatesDir, (err, template) ->
+      return callback(err) if err
+      template "accountValidated", {}, (err, html, text) ->
         return callback(err) if err
         self.sendMail
           from: config.mailer.sender['no-reply']

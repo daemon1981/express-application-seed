@@ -3,6 +3,9 @@ mixin message(msg, classes)
         button(type="button", class="close", data-dismiss="alert") &times;
         | #{msg}
 
+- if (errorMessage)
+    +message(errorMessage)
+
 - if (warningMessage)
     +message(warningMessage)
 

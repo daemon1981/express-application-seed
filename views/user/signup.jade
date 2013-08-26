@@ -1,7 +1,8 @@
 extends ../layout
 
 block content
-    form.form-signup(method="POST", action="/signup")
+    include ../commons/messages
+    form.form-signup(method="POST", action="/signup", role="form")
         h2.form-signup-heading Sign up
         input.form-control#email(type='text', name='email', placeholder="Email")
         input.form-control#password(type='password', name='password', placeholder="Password")

@@ -1,6 +1,7 @@
 extends ../layout
 
 block content
+    include ../commons/messages
     form.form-login(method="POST", action="/login")
         h2.form-login-heading Log In
         input.form-control#email(type='text', name='email', placeholder="Email")
