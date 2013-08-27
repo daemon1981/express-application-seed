@@ -48,7 +48,7 @@ module.exports = (app) ->
   app.post "/signup", userExist, (req, res, next) ->
     User.signup req.body.email, req.body.password, (err, user) ->
       return res.render("user/signup", errorMessage: 'Account already exists') if err
-      url = 'http://' + req.host + '/signup/validation?key=' + user.validatationKey
+      url = 'http://' + req.host + '/signup/validation?key=' + user.validationKey
       mailer.sendSignupConfirmation user.email, url, (err, response) ->
         return next(err) if err
         res.redirect "/signupConfirmation"
