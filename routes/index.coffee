@@ -1,7 +1,9 @@
 passport = require "passport"
 config   = require "config"
+request  = require "request"
 
 User     = require("../model/user")
+Contact  = require("../model/contact")
 Mailer   = require("../lib/mailer")
 Image    = require("../lib/image")
 
@@ -135,6 +137,47 @@ module.exports = (app) ->
 
   app.delete "/profile-picture", isAuthenticated, (req, res, next) ->
     image.destroyUserPicture req.user
+
+  app.get "/guide", (req, res) ->
+    res.render "guide"
+
+  app.get "/contact", (req, res) ->
+    res.render "contact",
+      user: req.user
+      publicKey: config.reCaptcha.publicKey
+
+  app.post "/contact", (req, res, next) ->
+    renderWithError = (errorMessage) ->
+      res.render "contact",
+        user: req.user
+        publicKey: config.reCaptcha.publicKey
+        errorMessage: errorMessage
+
+    createContact = (email) ->
+      contact = new Contact(req.body)
+      contact.save (err) ->
+        return renderWithError 'An error in the form' if err
+        mailer.sendContactConfirmation email, () ->
+          res.redirect "/contact/confirmation"
+
+    if req.isAuthenticated()
+      createContact req.user.email
+    else
+      requestData =
+        privatekey: config.reCaptcha.privateKey
+        remoteip:   req.ip
+        challenge:  req.body.recaptcha_challenge_field
+        response:   req.body.recaptcha_response_field
+      request.post 'http://www.google.com/recaptcha/api/verify', requestData, (err, res) ->
+        return next(err) if err
+        parsedResponse = res.split('\n')
+        return next(new Error('ReCaptcha response cannot be parsed')) if !parsedResponse
+        if parsedResponse[0] is false
+          return renderWithError 'Captcha is not correct' if err
+        createContact req.body.email
+
+  app.get "/contact/confirmation", (req, res) ->
+    res.render "contact/confirmation"
 
   app.get "/logout", (req, res) ->
     req.logout()

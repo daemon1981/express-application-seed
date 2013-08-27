@@ -1,3 +1,22 @@
+mixin buildMenu(menuConfig)
+    each data, section in menuConfig
+        - var activeClass = '';
+        - var navClass = '';
+        - if (section == activeSection)
+            activeClass = 'active';
+        - if (data.child != undefined)
+            navClass = 'dropdown';
+        li(class='#{activeClass} #{navClass}')
+            if data.child != undefined
+                a.dropdown-toggle(href="#", data-toggle="dropdown") #{__i(data.label)}
+                    b.caret
+                ul.dropdown-menu
+                    each dataChild, childSection in data.child
+                        li
+                            a(href="#{dataChild.url}") #{__i(dataChild.label)}
+            else
+                a(href="#{data.url}") #{__i(data.label)}
+
 .navbar-header
     button.navbar-toggle(type="button", data-toggle="collapse", data-target=".navbar-collapse")
         span.icon-bar
@@ -5,25 +24,11 @@
         span.icon-bar
     a.navbar-brand(href="/") Super Site !
 div#main-menu.navbar-collapse.collapse
+    ul.nav.navbar-nav
+        if user
+            +buildMenu(menu.private)
+        +buildMenu(menu.public)
     if user
-        ul.nav.navbar-nav
-            each data, section in menu
-                - var activeClass = '';
-                - var navClass = '';
-                - if (section == activeSection)
-                    activeClass = 'active';
-                - if (data.child != undefined)
-                    navClass = 'dropdown';
-                li(class='#{activeClass} #{navClass}')
-                    if data.child != undefined
-                        a.dropdown-toggle(href="#", data-toggle="dropdown") #{__i(data.label)}
-                            b.caret
-                        ul.dropdown-menu
-                            each dataChild, childSection in data.child
-                                li
-                                    a(href="#{dataChild.url}") #{__i(dataChild.label)}
-                    else
-                        a(href="#{data.url}") #{__i(data.label)}
         p.nav.pull-right
             | Signed in as
             a(href="/profile", class="navbar-link")= user.getName()

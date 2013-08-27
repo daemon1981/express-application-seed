@@ -1,0 +1,32 @@
+extends layout
+
+block content
+    legend Contact
+    include commons/messages
+    form.form-horizontal(method="POST", action="/contact", role="form")
+        - if (!user)
+            .form-group
+                label.control-label.col-lg-2(for='email') Email
+                .col-lg-6
+                    input#email.form-control(type='text', name='email', placeholder="Email")
+        .form-group
+            label.control-label.col-lg-2(for='subject') Subject
+            .col-lg-6
+                input#subject.form-control(type='text', name='subject', placeholder="Subject")
+        .form-group
+            label.control-label.col-lg-2(for='message') Message
+            .col-lg-6
+                textarea#message.form-control(type='text', name='message', placeholder="Message", rows="15", style="resize: none;")
+        - if (!user)
+            .form-group
+                label.control-label.col-lg-2.sr-only(for='recaptcha_challenge_field') Captcha
+                .col-lg-6
+                    script(src="http://www.google.com/recaptcha/api/challenge?k="+publicKey)
+                    noscript
+                        iframe(src="http://www.google.com/recaptcha/api/noscript?k="+publicKey, height="300", width="500", frameborder="0")
+                        br
+                        textarea(name="recaptcha_challenge_field", rows="3", cols="40")
+                        input(type="hidden", name="recaptcha_response_field", value="manual_challenge")
+        .form-group
+            .col-lg-offset-2.col-lg-10
+                input.btn.btn-default(type="submit", value="Sauvegarder")

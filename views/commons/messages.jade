@@ -4,10 +4,10 @@ mixin message(msg, classes)
         | #{msg}
 
 - if (errorMessage)
-    +message(errorMessage)
+    +message(errorMessage, 'alert-error')
 
 - if (warningMessage)
-    +message(warningMessage)
+    +message(warningMessage, 'alert-warning')
 
 - if (successMessage)
     +message(successMessage, 'alert-success')
