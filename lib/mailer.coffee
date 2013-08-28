@@ -66,4 +66,17 @@ module.exports = ->
           html: html
         , callback
 
+  this.sendContactConfirmation = (email, callback) ->
+    emailTemplates templatesDir, (err, template) ->
+      return callback(err) if err
+      template "contactConfirmation", {}, (err, html, text) ->
+        return callback(err) if err
+        self.sendMail
+          from: config.mailer.sender['no-reply']
+          to: email
+          subject: "Your contact request has been received"
+          text: text
+          html: html
+        , callback
+
   return
