@@ -1,6 +1,6 @@
-passport = require "passport"
-config   = require "config"
-request  = require "request"
+passport = require 'passport'
+config   = require 'config'
+request  = require 'request'
 
 User     = require("../model/user")
 Contact  = require("../model/contact")
@@ -182,3 +182,10 @@ module.exports = (app) ->
   app.get "/logout", (req, res) ->
     req.logout()
     res.redirect "/login"
+
+  app.get "/language/:language", (req, res) ->
+    req.user.locale = req.params.language
+    if req.isAuthenticated()
+      res.redirect "/profile"
+    else
+      res.redirect "/"

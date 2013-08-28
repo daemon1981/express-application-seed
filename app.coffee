@@ -7,7 +7,8 @@ express    = require 'express'
 config     = require 'config'
 http       = require 'http'
 path       = require 'path'
-i18n       = require "i18n"
+i18n       = require 'i18n'
+locale     = require 'locale'
 passport   = require 'passport'
 flash      = require 'connect-flash'
 RedisStore = require('connect-redis')(express)
@@ -15,6 +16,12 @@ RedisStore = require('connect-redis')(express)
 app = express()
 
 require './passport-bootstrap'
+
+i18n.configure
+  locales: ["en", "fr"]
+  directory: __dirname + "/locales"
+
+app.use(locale(["en", "fr"]))
 
 app.configure ->
   app.set "port", process.env.PORT or 3000
@@ -34,6 +41,12 @@ app.configure ->
   app.use express.session({ store: new RedisStore(config.Redis), secret: "keyboard cat" })
   app.use passport.initialize()
   app.use passport.session()
+  app.use (req, res, next) ->
+    i18n.setLocale = req.locale
+    if req.user and req.user.locale
+      i18n.setLocale = req.user.locale
+      console.log 'youpi!'
+    next()
   app.use express.methodOverride()
   app.use flash()
   app.use app.router

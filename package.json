@@ -29,6 +29,7 @@
     , "formidable": "1.0.11"
     , "imagemagick": "0.1.3"
     , "request": "v2.27.0"
+    , "locale": "0.0.10"
   },
   "devDependencies": {
     "should": "1.2.2",
