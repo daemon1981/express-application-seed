@@ -6,6 +6,10 @@
   "Redis": {
     "port": 6379
   },
+  "reCaptcha": {
+    "publicKey":  "xxxxxxxxxxxxxx",
+    "privateKey": "xxxxxxxxxxxxxx"
+  },
   "Upload": {
     "minFileSize": 1,
     "maxFileSize": 2000000, // 2 MB
@@ -17,26 +21,38 @@
     }
   },
   "menu": {
-    "profile": {
-      "url": "/profile",
-      "label": "Profile"
-    },
-    "submenufields": {
-      "label": "Sub Menu Fields",
-      "child": {
-        "subelement1": {
-          "url": "/subelement1/url",
-          "label": "Sub element 1"
-        },
-        "subelement2": {
-          "url": "/subelement2/url",
-          "label": "Sub element 1"
+    "private": {
+      "profile": {
+        "url": "/profile",
+        "label": "Profile"
+      },
+      "submenufields": {
+        "label": "Sub Menu Fields",
+        "child": {
+          "subelement1": {
+            "url": "/subelement1/url",
+            "label": "Sub element 1"
+          },
+          "subelement2": {
+            "url": "/subelement2/url",
+            "label": "Sub element 1"
+          }
         }
+      },
+      "OneOtherMenuField": {
+        "url": "/element/url",
+        "label": "Element"
       }
     },
-    "OneOtherMenuField": {
-      "url": "/element/url",
-      "label": "Element"
+    "public": {
+      "guide": {
+        "url": "/guide",
+        "label": "User guide"
+      },
+      "contact": {
+        "url": "/contact",
+        "label": "Contact"
+      }
     }
   },
   "mailer": {

@@ -1,0 +1,6 @@
+{
+  "reCaptcha": {
+    "publicKey":  "xxxxxxxxxxxxxx",
+    "privateKey": "xxxxxxxxxxxxxx"
+  }
+}
