@@ -41,17 +41,16 @@ app.configure ->
   app.use express.session({ store: new RedisStore(config.Redis), secret: "keyboard cat" })
   app.use passport.initialize()
   app.use passport.session()
+  app.use express.static(path.join(__dirname, "public"))
+  app.use express.static(path.join(__dirname, "uploads"))
   app.use (req, res, next) ->
-    i18n.setLocale = req.locale
+    res.locals.locale = i18n.setLocale = req.locale
     if req.user and req.user.locale
-      i18n.setLocale = req.user.locale
-      console.log 'youpi!'
+      res.locals.locale = i18n.setLocale = req.user.locale
     next()
   app.use express.methodOverride()
   app.use flash()
   app.use app.router
-  app.use express.static(path.join(__dirname, "public"))
-  app.use express.static(path.join(__dirname, "uploads"))
   app.use require("less-middleware")(src: __dirname + "/public")
 
 i18n.setLocale "fr"

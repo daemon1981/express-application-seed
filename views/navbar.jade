@@ -35,6 +35,16 @@ div#main-menu.navbar-collapse.collapse
             | &nbsp;
             a.btn.btn-danger.navbar-btn(href="/logout"): i.glyphicon.glyphicon-log-out
     else
-        ul.nav.navbar-nav.pull-right
-            a.btn.btn-default.navbar-btn(href="/signup") SignUp
-            a.btn.btn-default.navbar-btn(href="/login")  LogIn
+        ul.nav.navbar-nav.navbar-right
+            li.dropdown
+                a(href="#", class="dropdown-toggle", data-toggle="dropdown")
+                    | #{__i('navbar-label-language')}:
+                    span.js-current-language #{__i('navbar-label-language-' + locale)}
+                    b.caret
+                ul.dropdown-menu(role="menu")
+                    li
+                        a(href="#") #{__i('navbar-label-language-fr')}
+                    li
+                        a(href="#") #{__i('navbar-label-language-en')}
+        a.btn.btn-default.navbar-btn.pull-right(href="/login")  LogIn
+        a.btn.btn-default.navbar-btn.pull-right(href="/signup") SignUp
