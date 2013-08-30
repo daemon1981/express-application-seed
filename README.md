@@ -15,6 +15,13 @@ git submodule update --init --recursive
 bower install
 ```
 
+### Prerequisite
+
+compile client coffeescripts on save:
+```
+coffee -wcb -o public/javascripts/ public/coffeescript/*.coffee
+```
+
 ## Tests
 
 launch unit tests:

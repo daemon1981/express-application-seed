@@ -2,5 +2,5 @@ extends ../layout
 
 block content
     .jumbotron
-        h1 Your account has been validated !
-        p: a.btn.btn-lg.btn-success(href="/login") Log in
+        h1  #{__i('signupValidation-label-title')}
+        p: a.btn.btn-lg.btn-success(href="/login")  #{__i('signupValidation-label-link')}
