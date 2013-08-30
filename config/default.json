@@ -53,6 +53,9 @@
       }
     }
   },
+  "signup": {
+    "captcha": true
+  },
   "mailer": {
     "sender": {
       "no-reply": "no-reply@super-site.com"

@@ -2,5 +2,8 @@
   "reCaptcha": {
     "publicKey":  "xxxxxxxxxxxxxx",
     "privateKey": "xxxxxxxxxxxxxx"
+  },
+  "signup": {
+    "captcha": true
   }
 }
