@@ -48,7 +48,7 @@ app.configure ->
       supported = new locale.Locales(config.languages)
       currentLocal = new locale.Locales(req.query.lang).best(supported)
     res.locals.locale = currentLocal
-    req.setLocale = currentLocal
+    i18n.setLocale currentLocal
     next()
   app.locals
     __i: i18n.__
