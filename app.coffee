@@ -41,12 +41,14 @@ app.configure ->
   app.use passport.initialize()
   app.use passport.session()
   app.use (req, res, next) ->
-    res.locals.locale = i18n.setLocale = req.locale
+    currentLocal = req.locale
     if req.user and req.user.language
-      res.locals.locale = i18n.setLocale = req.user.language
+      currentLocal = req.user.language
     if req.query.lang
       supported = new locale.Locales(config.languages)
-      res.locals.locale = i18n.setLocale = new locale.Locales(req.query.lang).best(supported)
+      currentLocal = new locale.Locales(req.query.lang).best(supported)
+    res.locals.locale = currentLocal
+    req.setLocale = currentLocal
     next()
   app.locals
     __i: i18n.__
