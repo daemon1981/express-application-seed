@@ -18,21 +18,20 @@ app = express()
 require './passport-bootstrap'
 
 i18n.configure
-  locales: ["en", "fr"]
+  locales: config.languages
   directory: __dirname + "/locales"
 
-app.use(locale(["en", "fr"]))
+app.use(locale(config.languages))
 
 app.configure ->
   app.set "port", process.env.PORT or 3000
   app.set "views", __dirname + "/views"
   app.set "view engine", "jade"
-  app.locals
-    __i: i18n.__
-    __n: i18n.__n
-    menu: config.menu
   app.use express.favicon()
   app.use express.logger("dev")
+  app.use require("less-middleware")(src: __dirname + "/public")
+  app.use express.static(path.join(__dirname, "public"))
+  app.use express.static(path.join(__dirname, "uploads"))
   app.use express.cookieParser()
   # app.use express.limit('4M')
   app.use express.bodyParser
@@ -41,19 +40,21 @@ app.configure ->
   app.use express.session({ store: new RedisStore(config.Redis), secret: "keyboard cat" })
   app.use passport.initialize()
   app.use passport.session()
-  app.use express.static(path.join(__dirname, "public"))
-  app.use express.static(path.join(__dirname, "uploads"))
   app.use (req, res, next) ->
     res.locals.locale = i18n.setLocale = req.locale
-    if req.user and req.user.locale
-      res.locals.locale = i18n.setLocale = req.user.locale
+    if req.user and req.user.language
+      res.locals.locale = i18n.setLocale = req.user.language
+    if req.query.lang
+      supported = new locale.Locales(config.languages)
+      res.locals.locale = i18n.setLocale = new locale.Locales(req.query.lang).best(supported)
     next()
+  app.locals
+    __i: i18n.__
+    __n: i18n.__n
+    navbar: config.navbar
   app.use express.methodOverride()
   app.use flash()
   app.use app.router
-  app.use require("less-middleware")(src: __dirname + "/public")
-
-i18n.setLocale "fr"
 
 app.configure "development", ->
   app.use express.errorHandler(

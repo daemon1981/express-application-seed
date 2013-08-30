@@ -20,11 +20,12 @@
         }
     }
   },
-  "menu": {
+  "languages": ["fr", "en"],
+  "navbar": {
     "private": {
       "profile": {
         "url": "/profile",
-        "label": "menu-label-profile"
+        "label": "navbar-label-profile"
       }
       // // dropdown menu entries example
       // "submenufields": {
@@ -44,11 +45,11 @@
     "public": {
       "guide": {
         "url": "/guide",
-        "label": "menu-label-guide"
+        "label": "navbar-label-guide"
       },
       "contact": {
         "url": "/contact",
-        "label": "menu-label-contact"
+        "label": "navbar-label-contact"
       }
     }
   },

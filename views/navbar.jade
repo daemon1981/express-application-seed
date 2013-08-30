@@ -1,5 +1,5 @@
-mixin buildMenu(menuConfig)
-    each data, section in menuConfig
+mixin buildMenu(navbarConfig)
+    each data, section in navbarConfig
         - var activeClass = '';
         - var navClass = '';
         - if (section == activeSection)
@@ -23,11 +23,11 @@ mixin buildMenu(menuConfig)
         span.icon-bar
         span.icon-bar
     a.navbar-brand(href="/") Super Site !
-div#main-menu.navbar-collapse.collapse
+div.navbar-collapse.collapse
     ul.nav.navbar-nav
         if user
-            +buildMenu(menu.private)
-        +buildMenu(menu.public)
+            +buildMenu(navbar.private)
+        +buildMenu(navbar.public)
     if user
         p.nav.pull-right
             | Signed in as
@@ -43,8 +43,8 @@ div#main-menu.navbar-collapse.collapse
                     b.caret
                 ul.dropdown-menu(role="menu")
                     li
-                        a(href="#") #{__i('navbar-label-language-fr')}
+                        a(href="?lang=fr") #{__i('navbar-label-language-fr')}
                     li
-                        a(href="#") #{__i('navbar-label-language-en')}
+                        a(href="?lang=en") #{__i('navbar-label-language-en')}
         a.btn.btn-default.navbar-btn.pull-right(href="/login")  LogIn
         a.btn.btn-default.navbar-btn.pull-right(href="/signup") SignUp

@@ -11,7 +11,7 @@ block append scripts
 
 block content
     form.form-horizontal(method="POST", action="/profile", role="form")
-        a.btn.btn-warning.pull-right(href="/forgot/password") Modify your password
+        a.btn.btn-warning.pull-right(href="/forgot/password") #{__i('profile-form-label-changePassword')}
         .form-group
             label.control-label.col-lg-2 Picture
             .col-lg-6
@@ -26,13 +26,20 @@ block content
                     span Select a picture
                     input#fileupload(type="file", name="picture", data-url="/profile-picture")
         .form-group
-            label.control-label.col-lg-2(for='firstName') First name
+            label.control-label.col-lg-2(for='firstName') #{__i('profile-form-label-firstName')}
             .col-lg-6
                 input#firstName.form-control(type='text', name='firstName', placeholder="First name", value=user.firstName)
         .form-group
-            label.control-label.col-lg-2(for='lastName') Last name
+            label.control-label.col-lg-2(for='lastName') #{__i('profile-form-label-lastName')}
             .col-lg-6
                 input#lastName.form-control(type='text', name='lastName', placeholder="Last name", value=user.lastName)
+        .form-group
+            label.control-label.col-lg-2(for='language') #{__i('profile-form-label-language')}
+            .col-lg-6
+                select#language.form-control(type='text', name='language')
+                    each language in languages
+                        - var isSelected = (language === user.language)
+                        option(value=language, selected=isSelected) #{__i('profile-form-label-language-'+language)}
         .form-group
             .col-lg-offset-2.col-lg-10
                 input.btn.btn-default(type="submit", value="Sauvegarder")

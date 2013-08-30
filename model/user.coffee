@@ -1,6 +1,7 @@
 mongoose = require 'mongoose'
 moment   = require 'moment'
 pwd      = require 'pwd'
+config   = require 'config'
 
 Schema   = mongoose.Schema
 
@@ -11,6 +12,7 @@ UserSchema = new Schema(
   salt:            type: String
   picture:         String
   passwordHash:    String
+  language:        type: String, required: true, enum: config.languages
   validated:       type: Boolean, default: false
   validationKey:   type: String
   facebook:
