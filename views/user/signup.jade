@@ -6,4 +6,11 @@ block content
         h2.form-signup-heading  #{__i('signup-form-label-title')}
         input.form-control#email(type='text', name='email', placeholder=" #{__i('signup-form-label-email')}")
         input.form-control#password(type='password', name='password', placeholder=" #{__i('signup-form-label-password')}")
+        if (hasCaptcha)
+            script(src="http://www.google.com/recaptcha/api/challenge?k="+publicKey)
+            noscript
+                iframe(src="http://www.google.com/recaptcha/api/noscript?k="+publicKey, height="300", width="500", frameborder="0")
+                br
+                textarea(name="recaptcha_challenge_field", rows="3", cols="40")
+                input(type="hidden", name="recaptcha_response_field", value="manual_challenge")
         input.btn.btn-lg.btn-primary.btn-block(type="submit", value=" #{__i('signup-form-label-submit')}")

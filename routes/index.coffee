@@ -18,14 +18,23 @@ module.exports = (app) ->
     else
       res.redirect "/login"
 
-  userExist = (req, res, next) ->
-    User.count
-      username: req.body.username
-    , (err, count) ->
-      if count is 0
-        next()
-      else
-        res.redirect "/signup"
+  validCaptcha = (req, res, next) ->
+    if req.isAuthenticated()
+      next()
+
+    requestData =
+      privatekey: config.reCaptcha.privateKey
+      remoteip:   req.ip
+      challenge:  req.body.recaptcha_challenge_field
+      response:   req.body.recaptcha_response_field
+    request.post 'http://www.google.com/recaptcha/api/verify', requestData, (err, res) ->
+      return next(err) if err
+      parsedResponse = res.split('\n')
+      return next(new Error('ReCaptcha response cannot be parsed')) if !parsedResponse
+      req.isCaptchaValid = true
+      if parsedResponse[0] is false
+        req.isCaptchaValid = false
+      next()
 
   # Routes
   app.get "/", (req, res) ->
@@ -45,11 +54,25 @@ module.exports = (app) ->
     failureRedirect: "/login"
   )
   app.get "/signup", (req, res) ->
-    res.render "user/signup"
+    res.render "user/signup",
+      publicKey: config.reCaptcha.publicKey
+      hasCaptcha: config.signup.captcha
 
-  app.post "/signup", userExist, (req, res, next) ->
+  signUpMiddlewares = []
+  if config.signup.captcha
+    signUpMiddlewares.push(validCaptcha)
+
+  app.post "/signup", signUpMiddlewares, (req, res, next) ->
+    renderWithError = (errorMessage) ->
+      return res.render "user/signup",
+        errorMessage: errorMessage
+        publicKey: config.reCaptcha.publicKey
+        hasCaptcha: config.signup.captcha
+
+    if config.signup.captcha and req.isCaptchaValid is false
+      return renderWithError 'Captcha is not correct'
     User.signup req.body.email, req.body.password, req.locale, (err, user) ->
-      return res.render("user/signup", errorMessage: 'Account already exists') if err
+      return renderWithError('Account already exists') if err
       url = 'http://' + req.host + '/signup/validation?key=' + user.validationKey
       mailer.sendSignupConfirmation user.email, url, (err, response) ->
         return next(err) if err
@@ -147,35 +170,20 @@ module.exports = (app) ->
       user: req.user
       publicKey: config.reCaptcha.publicKey
 
-  app.post "/contact", (req, res, next) ->
+  app.post "/contact", validCaptcha, (req, res, next) ->
     renderWithError = (errorMessage) ->
       res.render "contact",
         user: req.user
         publicKey: config.reCaptcha.publicKey
         errorMessage: errorMessage
 
-    createContact = (email) ->
-      contact = new Contact(req.body)
-      contact.save (err) ->
-        return renderWithError 'An error in the form' if err
-        mailer.sendContactConfirmation email, () ->
-          res.redirect "/contact/confirmation"
-
-    if req.isAuthenticated()
-      createContact req.user.email
-    else
-      requestData =
-        privatekey: config.reCaptcha.privateKey
-        remoteip:   req.ip
-        challenge:  req.body.recaptcha_challenge_field
-        response:   req.body.recaptcha_response_field
-      request.post 'http://www.google.com/recaptcha/api/verify', requestData, (err, res) ->
-        return next(err) if err
-        parsedResponse = res.split('\n')
-        return next(new Error('ReCaptcha response cannot be parsed')) if !parsedResponse
-        if parsedResponse[0] is false
-          return renderWithError 'Captcha is not correct' if err
-        createContact req.body.email
+    if config.signup.captcha and req.isCaptchaValid is false
+      return renderWithError 'Captcha is not correct'
+    contact = new Contact(req.body)
+    contact.save (err) ->
+      return renderWithError('An error in the form') if err
+      mailer.sendContactConfirmation email, () ->
+        res.redirect "/contact/confirmation"
 
   app.get "/contact/confirmation", (req, res) ->
     res.render "contact/confirmation"
