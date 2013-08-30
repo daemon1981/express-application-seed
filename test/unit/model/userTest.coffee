@@ -15,7 +15,7 @@ describe "user", ->
   describe "#signup()", ->
     it "should create a user and set validated to false", (done) ->
       email = 'toto@toto.com'
-      User.signup email, 'passwd', (err) ->
+      User.signup email, 'passwd', 'fr', (err) ->
         should.not.exist(err)
         User.find {}, (err, users) ->
           users.length.should.equal(1)
@@ -27,8 +27,8 @@ describe "user", ->
           done()
     it "should not be possible to create a user with the same email", (done) ->
       email = 'toto@toto.com'
-      User.signup email, 'passwd', (err) ->
-        User.signup email, 'other-passwd', (err) ->
+      User.signup email, 'passwd', 'fr', (err) ->
+        User.signup email, 'other-passwd', 'fr', (err) ->
           should.exist(err)
           done()
 
@@ -37,7 +37,7 @@ describe "user", ->
       email = 'toto@toto.com'
       userTest  = {}
       async.series [(callback) ->
-        User.signup email, 'passwd', (err, user) ->
+        User.signup email, 'passwd', 'fr', (err, user) ->
           userTest = user
           callback()
       , (callback) ->
@@ -58,7 +58,7 @@ describe "user", ->
     email = 'toto@toto.com'
     user = {}
     beforeEach (done) ->
-      User.signup email, passwd, (err, newUser) ->
+      User.signup email, passwd, 'fr', (err, newUser) ->
         user = newUser
         done()
     describe "user not validated", ->
@@ -95,7 +95,7 @@ describe "user", ->
     email = 'toto@toto.com'
     user = {}
     beforeEach (done) ->
-      User.signup email, passwd, (err, newUser) ->
+      User.signup email, passwd, 'fr', (err, newUser) ->
         user = newUser
         done()
     it "should set required fields for forgot password process", (done) ->
@@ -111,6 +111,7 @@ describe "user", ->
       id: '4ds5fd6'
       emails: [value: email]
       displayName: 'Toto Dupond'
+      language: 'fr'
     describe "when not existing", (done) ->
       it "should create facebook user", (done) ->
         User.findOrCreateFaceBookUser profile, (err, user) ->

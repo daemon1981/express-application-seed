@@ -20,38 +20,36 @@
         }
     }
   },
-  "menu": {
+  "languages": ["fr", "en"],
+  "navbar": {
     "private": {
       "profile": {
         "url": "/profile",
-        "label": "Profile"
-      },
-      "submenufields": {
-        "label": "Sub Menu Fields",
-        "child": {
-          "subelement1": {
-            "url": "/subelement1/url",
-            "label": "Sub element 1"
-          },
-          "subelement2": {
-            "url": "/subelement2/url",
-            "label": "Sub element 1"
-          }
-        }
-      },
-      "OneOtherMenuField": {
-        "url": "/element/url",
-        "label": "Element"
+        "label": "navbar-label-profile"
       }
+      // // dropdown menu entries example
+      // "submenufields": {
+      //   "label": "Sub Menu Fields",
+      //   "child": {
+      //     "subelement1": {
+      //       "url": "/subelement1/url",
+      //       "label": "Sub element 1"
+      //     },
+      //     "subelement2": {
+      //       "url": "/subelement2/url",
+      //       "label": "Sub element 1"
+      //     }
+      //   }
+      // },
     },
     "public": {
       "guide": {
         "url": "/guide",
-        "label": "User guide"
+        "label": "navbar-label-guide"
       },
       "contact": {
         "url": "/contact",
-        "label": "Contact"
+        "label": "navbar-label-contact"
       }
     }
   },

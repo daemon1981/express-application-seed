@@ -1,6 +1,6 @@
-passport = require "passport"
-config   = require "config"
-request  = require "request"
+passport = require 'passport'
+config   = require 'config'
+request  = require 'request'
 
 User     = require("../model/user")
 Contact  = require("../model/contact")
@@ -48,7 +48,7 @@ module.exports = (app) ->
     res.render "user/signup"
 
   app.post "/signup", userExist, (req, res, next) ->
-    User.signup req.body.email, req.body.password, (err, user) ->
+    User.signup req.body.email, req.body.password, req.locale, (err, user) ->
       return res.render("user/signup", errorMessage: 'Account already exists') if err
       url = 'http://' + req.host + '/signup/validation?key=' + user.validationKey
       mailer.sendSignupConfirmation user.email, url, (err, response) ->
@@ -117,6 +117,7 @@ module.exports = (app) ->
   app.get "/profile", isAuthenticated, (req, res, next) ->
     res.render "user/profile",
       user: req.user
+      languages: config.languages
 
   app.post "/profile", isAuthenticated, (req, res, next) ->
     User.update { _id: req.user._id }, req.body, (err) ->

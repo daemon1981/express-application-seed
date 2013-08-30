@@ -1,6 +1,7 @@
 mongoose = require 'mongoose'
 moment   = require 'moment'
 pwd      = require 'pwd'
+config   = require 'config'
 
 Schema   = mongoose.Schema
 
@@ -11,6 +12,7 @@ UserSchema = new Schema(
   salt:            type: String
   picture:         String
   passwordHash:    String
+  language:        type: String, required: true, enum: config.languages
   validated:       type: Boolean, default: false
   validationKey:   type: String
   facebook:
@@ -27,13 +29,13 @@ UserSchema = new Schema(
 Statics
 ###
 
-UserSchema.statics.signup = (email, password, done) ->
+UserSchema.statics.signup = (email, password, language, done) ->
   self = this
   self.findOne {email: email}, (err, user) ->
     return done(err) if err
     unless !user
       return done(new Error("Email already exists."), null)
-    newUser = new self(email: email)
+    newUser = new self(email: email, language: language)
     newUser.updatePassword password, (err) ->
       return done(err) if err
       newUser.generateRandomKey (err, key) ->
@@ -80,6 +82,7 @@ UserSchema.statics.findOrCreateFaceBookUser = (profile, done) ->
     else
       new self(
         email:     profile.emails[0].value
+        language:  profile.language
         validated: true
         facebook:
           id:    profile.id

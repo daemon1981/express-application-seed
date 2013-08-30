@@ -3,7 +3,7 @@ extends ../layout
 block content
     include ../commons/messages
     form.form-signup(method="POST", action="/signup", role="form")
-        h2.form-signup-heading Sign up
-        input.form-control#email(type='text', name='email', placeholder="Email")
-        input.form-control#password(type='password', name='password', placeholder="Password")
-        input.btn.btn-lg.btn-primary.btn-block(type="submit", value="Sign up")
+        h2.form-signup-heading  #{__i('signup-form-label-title')}
+        input.form-control#email(type='text', name='email', placeholder=" #{__i('signup-form-label-email')}")
+        input.form-control#password(type='password', name='password', placeholder=" #{__i('signup-form-label-password')}")
+        input.btn.btn-lg.btn-primary.btn-block(type="submit", value=" #{__i('signup-form-label-submit')}")
