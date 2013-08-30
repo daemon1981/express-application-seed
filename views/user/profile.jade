@@ -28,11 +28,11 @@ block content
         .form-group
             label.control-label.col-lg-2(for='firstName') #{__i('profile-form-label-firstName')}
             .col-lg-6
-                input#firstName.form-control(type='text', name='firstName', placeholder="First name", value=user.firstName)
+                input#firstName.form-control(type='text', name='firstName', placeholder="#{__i('profile-form-label-firstName')}", value=user.firstName)
         .form-group
             label.control-label.col-lg-2(for='lastName') #{__i('profile-form-label-lastName')}
             .col-lg-6
-                input#lastName.form-control(type='text', name='lastName', placeholder="Last name", value=user.lastName)
+                input#lastName.form-control(type='text', name='lastName', placeholder="#{__i('profile-form-label-lastName')}", value=user.lastName)
         .form-group
             label.control-label.col-lg-2(for='language') #{__i('profile-form-label-language')}
             .col-lg-6
@@ -42,4 +42,4 @@ block content
                         option(value=language, selected=isSelected) #{__i('profile-form-label-language-'+language)}
         .form-group
             .col-lg-offset-2.col-lg-10
-                input.btn.btn-default(type="submit", value="Sauvegarder")
+                input.btn.btn-default(type="submit", value="#{__i('profile-form-label-save')}")
