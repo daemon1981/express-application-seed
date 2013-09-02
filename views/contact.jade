@@ -1,5 +1,7 @@
 extends layout
 
+include commons/form/mixins
+
 block content
     legend Contact
     include commons/messages
@@ -9,24 +11,11 @@ block content
                 label.control-label.col-lg-2(for='email') #{__i('contact-form-label-email')}
                 .col-lg-6
                     input#email.form-control(type='text', name='email', placeholder="#{__i('contact-form-label-email')}")
-        .form-group
-            label.control-label.col-lg-2(for='subject') #{__i('contact-form-label-subject')}
-            .col-lg-6
-                input#subject.form-control(type='text', name='subject', placeholder="#{__i('contact-form-label-subject')}")
-        .form-group
-            label.control-label.col-lg-2(for='message') #{__i('contact-form-label-message')}
-            .col-lg-6
-                textarea#message.form-control(type='text', name='message', placeholder="#{__i('contact-form-label-message')}", rows="15", style="resize: none;")
+        +form-text(__i('contact-form-label-subject'),     'subject', data.subject, errors && errors.subject ? errors.subject.message : null)
+        +form-textarea(__i('contact-form-label-message'), 'message', data.message, errors && errors.message ? errors.message.message : null)
         - if (!user)
-            .form-group
-                label.control-label.col-lg-2.sr-only(for='recaptcha_challenge_field') #{__i('contact-form-label-captcha')}
-                .col-lg-6
-                    script(src="http://www.google.com/recaptcha/api/challenge?k="+publicKey)
-                    noscript
-                        iframe(src="http://www.google.com/recaptcha/api/noscript?k="+publicKey, height="300", width="500", frameborder="0")
-                        br
-                        textarea(name="recaptcha_challenge_field", rows="3", cols="40")
-                        input(type="hidden", name="recaptcha_response_field", value="manual_challenge")
+            +form-captcha(__i('contact-form-label-captcha'), errors && errors.captcha ? errors.captcha.message : null)
+
         .form-group
             .col-lg-offset-2.col-lg-10
                 input.btn.btn-default(type="submit", value="#{__i('contact-form-label-submit')}")

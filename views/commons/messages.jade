@@ -1,10 +1,10 @@
 mixin message(msg, classes)
     .alert(class=classes)
         button(type="button", class="close", data-dismiss="alert") &times;
-        | #{msg}
+        | #{__i(msg)}
 
 - if (errorMessage)
-    +message(errorMessage, 'alert-error')
+    +message(errorMessage, 'alert-danger')
 
 - if (warningMessage)
     +message(warningMessage, 'alert-warning')

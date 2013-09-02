@@ -37,5 +37,11 @@
 	"signupConfirmation-label-text": "A email have just been sent to you. Please validate your account by on clicking on the given url. See you soon !",
 	"signupConfirmation-label-link": "Go back to home page",
 	"signupValidation-label-title": "Your account has been validated !",
-	"signupValidation-label-link": "Log in"
+	"signupValidation-label-link": "Log in",
+	"contact-form-label-captcha": "Captcha",
+	"message-login-error": "Invalid email or password",
+	"Validator \"required\" failed for path message with value ``": "This field is required",
+	"Validation failed": "Form has errors",
+	"Validator \"required\" failed for path subject with value ``": "This field is required",
+	"message-contact-captcha-error": "Captcha is not correct"
 }
