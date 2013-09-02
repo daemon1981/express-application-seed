@@ -1,0 +1,31 @@
+mixin form-input(label, name, error, hideLabel)
+    .form-group(class=(error ? 'has-error': ''))
+        label.control-label.col-lg-2(for=name, class=(hideLabel === true ? "sr-only" : ""))= label
+        .col-lg-6
+            block
+            - if (error)
+                p.help-block= __i(error)
+
+mixin form-text(label, name, value, error)
+    +form-input(label, name, error)
+        input.form-control(type='text', id=name, name=name, placeholder=label, value=value)
+
+mixin form-textarea(label, name, value, error)
+    +form-input(label, name, error)
+        textarea.form-control(id=name, name=name, placeholder=label, rows="15", style="resize: none;")= value
+
+mixin form-select(label, name, selections, value, error)
+    +form-input(label, name, error)
+        select.form-control(type='text', id=name, name='language')
+            each label, key in selections
+                - var isSelected = (key === value)
+                option(value=key, selected=isSelected)= label
+
+mixin form-captcha(label, error)
+    +form-input(label, 'recaptcha_challenge_field', error, true)
+        script(src="http://www.google.com/recaptcha/api/challenge?k="+publicKey)
+        noscript
+            iframe(src="http://www.google.com/recaptcha/api/noscript?k="+publicKey, height="300", width="500", frameborder="0")
+            br
+            textarea(name="recaptcha_challenge_field", rows="3", cols="40")
+            input(type="hidden", name="recaptcha_response_field", value="manual_challenge")

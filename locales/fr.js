@@ -38,6 +38,10 @@
 	"signupConfirmation-label-link": "Revenir à l'accueil",
 	"signupValidation-label-title": "Votre compte a été validé !",
 	"signupValidation-label-link": "Se connecter",
-	"contact-form-label-captcha": "contact-form-label-captcha",
-	"forgotPassword-label-link": "forgotPassword-label-link"
+	"contact-form-label-captcha": "Captcha",
+	"message-login-error": "Email ou mot de passe incorrect",
+	"Validator \"required\" failed for path message with value ``": "Ce champs est requis",
+	"Validation failed": "Le formulaire comporte des erreurs",
+	"Validator \"required\" failed for path subject with value ``": "Ce champs est requis",
+	"message-contact-captcha-error": "Le formulaire comporte des erreurs"
 }
