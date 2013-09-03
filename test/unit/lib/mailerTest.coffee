@@ -15,7 +15,14 @@ describe "mailer", ->
 
   describe "#sendSignupConfirmation()", ->
     it "should call sendMail", (done) ->
-      mailer.sendSignupConfirmation 'toto@toto.com', (err, response) ->
+      mailer.sendSignupConfirmation 'toto@toto.com', 'http://dummy-url.com', (err, response) ->
+        should.not.exists(err)
+        assert(mailer.sendMail.called);
+        done()
+
+  describe "#sendAccountValidatedConfirmation()", ->
+    it "should call sendMail", (done) ->
+      mailer.sendAccountValidatedConfirmation 'toto@toto.com', (err, response) ->
         should.not.exists(err)
         assert(mailer.sendMail.called);
         done()
@@ -30,6 +37,13 @@ describe "mailer", ->
   describe "#sendPasswordReseted()", ->
     it "should call sendMail", (done) ->
       mailer.sendPasswordReseted 'toto@toto.com', 'http://dummy-url.com', (err, response) ->
+        should.not.exists(err)
+        assert(mailer.sendMail.called);
+        done()
+
+  describe "#sendContactConfirmation()", ->
+    it "should call sendMail", (done) ->
+      mailer.sendContactConfirmation 'toto@toto.com', (err, response) ->
         should.not.exists(err)
         assert(mailer.sendMail.called);
         done()

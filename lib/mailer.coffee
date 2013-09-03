@@ -9,15 +9,15 @@ module.exports = ->
   self = this
 
   # send mail with defined transport object
-  this.sendMail = (mailOptions, callback) ->
+  @sendMail = (mailOptions, callback) ->
     smtpTransport.sendMail mailOptions, (err, response) ->
       return callback(err) if err
       callback(err, response)
 
-  this.sendSignupConfirmation = (email, validatationUrl, callback) ->
+  @sendSignupConfirmation = (email, validationUrl, callback) ->
     emailTemplates templatesDir, (err, template) ->
       return callback(err) if err
-      template "signup", {url: validatationUrl}, (err, html, text) ->
+      template "signup", {url: validationUrl}, (err, html, text) ->
         return callback(err) if err
         self.sendMail
           from: config.mailer.sender['no-reply']
@@ -27,7 +27,7 @@ module.exports = ->
           html: html
         , callback
 
-  this.sendAccountValidatedConfirmation = (email, callback) ->
+  @sendAccountValidatedConfirmation = (email, callback) ->
     emailTemplates templatesDir, (err, template) ->
       return callback(err) if err
       template "accountValidated", {}, (err, html, text) ->
@@ -40,7 +40,7 @@ module.exports = ->
           html: html
         , callback
 
-  this.sendForgotPassword = (email, url, callback) ->
+  @sendForgotPassword = (email, url, callback) ->
     emailTemplates templatesDir, (err, template) ->
       return callback(err) if err
       template "forgotPassword", url: url, (err, html, text) ->
@@ -53,7 +53,7 @@ module.exports = ->
           html: html
         , callback
 
-  this.sendPasswordReseted = (email, url, callback) ->
+  @sendPasswordReseted = (email, url, callback) ->
     emailTemplates templatesDir, (err, template) ->
       return callback(err) if err
       template "passwordReseted", { url: url, email: email}, (err, html, text) ->
@@ -66,7 +66,7 @@ module.exports = ->
           html: html
         , callback
 
-  this.sendContactConfirmation = (email, callback) ->
+  @sendContactConfirmation = (email, callback) ->
     emailTemplates templatesDir, (err, template) ->
       return callback(err) if err
       template "contactConfirmation", {}, (err, html, text) ->
