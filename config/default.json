@@ -21,6 +21,11 @@
     }
   },
   "languages": ["fr", "en"],
+  "email": {
+    "default": {
+      "language": "en"
+    }
+  },
   "navbar": {
     "private": {
       "profile": {

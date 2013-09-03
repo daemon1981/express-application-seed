@@ -76,7 +76,7 @@ module.exports = (app) ->
     User.signup req.body.email, req.body.password, req.locale, (err, user) ->
       return renderWithError('Account already exists') if err
       url = 'http://' + req.host + '/signup/validation?key=' + user.validationKey
-      mailer.sendSignupConfirmation user.email, url, (err, response) ->
+      mailer.sendSignupConfirmation req.locale, user.email, url, (err, response) ->
         return next(err) if err
         res.redirect '/signupConfirmation'
 
@@ -86,7 +86,7 @@ module.exports = (app) ->
   app.get '/signup/validation', (req, res, next) ->
     User.accountValidator req.query.key, (err, user) ->
       return res.redirect '/' if err
-      mailer.sendAccountValidatedConfirmation user.email, (err, response) ->
+      mailer.sendAccountValidatedConfirmation req.locale, user.email, (err, response) ->
         return next(err) if err
         res.redirect '/signupValidation'
 
@@ -104,7 +104,7 @@ module.exports = (app) ->
       user.requestResetPassword (err, user) ->
         return next(err) if err
         url = 'http://' + req.host + '/reset/password?key=' + user.regeneratePasswordKey
-        mailer.sendForgotPassword user.email, url, (err, response) ->
+        mailer.sendForgotPassword req.locale, user.email, url, (err, response) ->
           return next(err) if err
           res.render 'user/forgotPassword', successMessage: 'We\'ve sent to you a email. Check your mail box.'
 
@@ -126,7 +126,7 @@ module.exports = (app) ->
         user.updatePassword req.body.password, (err) ->
           return next(err) if err
           url = 'http://' + req.host + '/forgot/password'
-          mailer.sendPasswordReseted user.email, url, (err, response) ->
+          mailer.sendPasswordReseted req.locale, user.email, url, (err, response) ->
             return next(err) if err
             res.render 'user/resetPassword', successMessage: 'Your password has been updated. Please login again.'
 
@@ -190,7 +190,7 @@ module.exports = (app) ->
           subject: message: err.errors.subject?.message
           message: message: err.errors.message?.message
       return res.redirect '/contact/confirmation' if !req.user
-      mailer.sendContactConfirmation req.user.email, () ->
+      mailer.sendContactConfirmation req.locale, req.user.email, () ->
         res.redirect '/contact/confirmation'
 
   app.get '/contact/confirmation', (req, res) ->
