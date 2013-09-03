@@ -1,23 +1,28 @@
 config         = require "config"
 nodemailer     = require "nodemailer"
-emailTemplates = require('email-templates');
+emailTemplates = require 'email-templates'
+_              = require('underscore')._
 
-templatesDir   = require('path').join(__dirname, '../templates/emails')
 smtpTransport  = nodemailer.createTransport("Sendmail")
 
 module.exports = ->
   self = this
 
+  @getTemplatesDir = (locale) ->
+    if _.indexOf(config.languages, locale) is -1
+      locale = config.email.default.language
+    return require('path').join(__dirname, '../templates/emails/' + locale)
+
   # send mail with defined transport object
-  this.sendMail = (mailOptions, callback) ->
+  @sendMail = (mailOptions, callback) ->
     smtpTransport.sendMail mailOptions, (err, response) ->
       return callback(err) if err
       callback(err, response)
 
-  this.sendSignupConfirmation = (email, validatationUrl, callback) ->
-    emailTemplates templatesDir, (err, template) ->
+  @sendSignupConfirmation = (locale, email, validationUrl, callback) ->
+    emailTemplates self.getTemplatesDir(locale), (err, template) ->
       return callback(err) if err
-      template "signup", {url: validatationUrl}, (err, html, text) ->
+      template "signup", {url: validationUrl}, (err, html, text) ->
         return callback(err) if err
         self.sendMail
           from: config.mailer.sender['no-reply']
@@ -27,8 +32,8 @@ module.exports = ->
           html: html
         , callback
 
-  this.sendAccountValidatedConfirmation = (email, callback) ->
-    emailTemplates templatesDir, (err, template) ->
+  @sendAccountValidatedConfirmation = (locale, email, callback) ->
+    emailTemplates self.getTemplatesDir(locale), (err, template) ->
       return callback(err) if err
       template "accountValidated", {}, (err, html, text) ->
         return callback(err) if err
@@ -40,8 +45,8 @@ module.exports = ->
           html: html
         , callback
 
-  this.sendForgotPassword = (email, url, callback) ->
-    emailTemplates templatesDir, (err, template) ->
+  @sendForgotPassword = (locale, email, url, callback) ->
+    emailTemplates self.getTemplatesDir(locale), (err, template) ->
       return callback(err) if err
       template "forgotPassword", url: url, (err, html, text) ->
         return callback(err) if err
@@ -53,8 +58,8 @@ module.exports = ->
           html: html
         , callback
 
-  this.sendPasswordReseted = (email, url, callback) ->
-    emailTemplates templatesDir, (err, template) ->
+  @sendPasswordReseted = (locale, email, url, callback) ->
+    emailTemplates self.getTemplatesDir(locale), (err, template) ->
       return callback(err) if err
       template "passwordReseted", { url: url, email: email}, (err, html, text) ->
         return callback(err) if err
@@ -66,8 +71,8 @@ module.exports = ->
           html: html
         , callback
 
-  this.sendContactConfirmation = (email, callback) ->
-    emailTemplates templatesDir, (err, template) ->
+  @sendContactConfirmation = (locale, email, callback) ->
+    emailTemplates self.getTemplatesDir(locale), (err, template) ->
       return callback(err) if err
       template "contactConfirmation", {}, (err, html, text) ->
         return callback(err) if err
