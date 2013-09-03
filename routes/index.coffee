@@ -12,12 +12,6 @@ mailer = new Mailer()
 
 module.exports = (app) ->
   # Helpers
-  isAuthenticated = (req, res, next) ->
-    if req.isAuthenticated()
-      next()
-    else
-      res.redirect '/login'
-
   validCaptcha = (req, res, next) ->
     if req.isAuthenticated()
       next()
@@ -38,13 +32,8 @@ module.exports = (app) ->
 
   # Routes
   app.get '/', (req, res) ->
-    if req.isAuthenticated()
-      res.render 'home',
-        user: req.user
-
-    else
-      res.render 'home',
-        user: null
+    res.render 'home',
+      user: req.user
 
   app.get '/login', (req, res) ->
     res.render 'user/login',
@@ -139,17 +128,17 @@ module.exports = (app) ->
     res.render 'user/profile',
       user: req.user
 
-  app.get '/profile', isAuthenticated, (req, res, next) ->
+  app.get '/profile', (req, res, next) ->
     res.render 'user/profile',
       user: req.user
       languages: config.languages
 
-  app.post '/profile', isAuthenticated, (req, res, next) ->
+  app.post '/profile', (req, res, next) ->
     User.update { _id: req.user._id }, req.body, (err) ->
       next(err) if err
       res.redirect '/profile'
 
-  app.post '/profile-picture', isAuthenticated, (req, res, next) ->
+  app.post '/profile-picture', (req, res, next) ->
     image.saveUserPicture req.user, req.files.picture, (err, pictureInfo) ->
       return next(err) if err
       baseUrl = ((if config.Upload.sslEnabled then 'https:' else 'http:')) + '//' + req.host + '/'
@@ -161,7 +150,7 @@ module.exports = (app) ->
         url:  baseUrl + pictureInfo.url
       ]
 
-  app.delete '/profile-picture', isAuthenticated, (req, res, next) ->
+  app.delete '/profile-picture', (req, res, next) ->
     image.destroyUserPicture req.user
 
   app.get '/guide', (req, res) ->

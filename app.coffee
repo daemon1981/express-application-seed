@@ -23,6 +23,23 @@ i18n.configure
 
 app.use(locale(config.languages))
 
+appMiddlewares = require './app-middlewares'
+
+publicPathes = [
+  '/',
+  '/login',
+  '/signup',
+  '/signupConfirmation',
+  '/forgot/password',
+  '/reset/password',
+  '/auth/facebook',
+  '/auth/facebook/callback',
+  '/guide',
+  '/contact',
+  '/contact/confirmation',
+  '/logout'
+]
+
 app.configure ->
   app.set "port", process.env.PORT or 3000
   app.set "views", __dirname + "/views"
@@ -40,16 +57,8 @@ app.configure ->
   app.use express.session({ store: new RedisStore(config.Redis), secret: "keyboard cat" })
   app.use passport.initialize()
   app.use passport.session()
-  app.use (req, res, next) ->
-    currentLocal = req.locale
-    if req.user and req.user.language
-      currentLocal = req.user.language
-    if req.query.lang
-      supported = new locale.Locales(config.languages)
-      currentLocal = new locale.Locales(req.query.lang).best(supported)
-    res.locals.locale = currentLocal
-    i18n.setLocale currentLocal
-    next()
+  app.use appMiddlewares.checkAuthentication(publicPathes, '/login')
+  app.use appMiddlewares.setLocale(config.languages)
   app.locals
     __i: i18n.__
     __n: i18n.__n
@@ -75,7 +84,6 @@ app.use (req, res, next) ->
   if req.accepts("html")
     res.render "error/404",
       url: req.url
-
     return
   if req.accepts("json")
     res.send error: "Not found"
