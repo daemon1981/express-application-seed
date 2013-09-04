@@ -2,10 +2,10 @@ passport = require 'passport'
 config   = require 'config'
 request  = require 'request'
 
-User     = require('../model/user')
-Contact  = require('../model/contact')
-Mailer   = require('../lib/mailer')
-Image    = require('../lib/image')
+User     = require '../model/user'
+Contact  = require '../model/contact'
+Mailer   = require '../lib/mailer'
+Image    = require '../lib/image'
 
 image  = new Image(config.Upload)
 mailer = new Mailer()

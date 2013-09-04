@@ -32,7 +32,8 @@
     , "locale": "0.0.10"
   },
   "devDependencies": {
-    "should": "1.2.2",
-    "sinon": "v1.7.3"
+    "should": "1.2.2"
+    , "sinon": "v1.7.3"
+    , "supertest": "latest"
   }
 }
