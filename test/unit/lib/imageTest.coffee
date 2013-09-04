@@ -21,7 +21,7 @@ describe "image", ->
   before (done) ->
     fixtures.load {User: []}, mongoose.connection, (err) ->
       done(err) if err
-      User.signup userEmail, 'passwd', done
+      User.signup userEmail, 'passwd', 'fr', done
 
   describe "#validate()", ->
     it "should validate when file is correct", (done) ->

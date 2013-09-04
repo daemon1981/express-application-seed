@@ -1,8 +1,5 @@
 require './bootstrap'
 
-###
-Module dependencies.
-###
 express    = require 'express'
 config     = require 'config'
 http       = require 'http'
