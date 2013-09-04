@@ -41,3 +41,10 @@ describe '/profile', ->
             should.not.exist(err)
             assert.equal fakeUser.lastName, modifiedUser.lastName
             done()
+
+  describe '** Logged out **', ->
+    describe 'GET', ->
+      it 'should return 302', (done) ->
+        request(new App()).get('/profile').expect(302).end (err, res) ->
+          should.not.exist err
+          done()
