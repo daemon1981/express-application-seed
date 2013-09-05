@@ -43,7 +43,14 @@ App = (connectedUser) ->
     app.set "views", __dirname + "/views"
     app.set "view engine", "jade"
     app.use express.favicon()
+
+  app.configure "development", ->
     app.use express.logger("dev")
+
+  app.configure "production", ->
+    app.use express.logger()
+
+  app.configure ->
     app.use require("less-middleware")(src: __dirname + "/public")
     app.use express.static(path.join(__dirname, "public"))
     app.use express.static(path.join(__dirname, "uploads"))

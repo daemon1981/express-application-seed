@@ -36,6 +36,8 @@ module.exports = (app) ->
       user: req.user
 
   app.get '/login', (req, res) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
     res.render 'user/login',
       errorMessage: req.flash('error')[0]
 
@@ -44,6 +46,7 @@ module.exports = (app) ->
     failureRedirect: '/login'
     failureFlash:    'message-login-error'
   )
+
   app.get '/signup', (req, res) ->
     res.render 'user/signup',
       publicKey: config.reCaptcha.publicKey
@@ -154,7 +157,8 @@ module.exports = (app) ->
     image.destroyUserPicture req.user
 
   app.get '/guide', (req, res) ->
-    res.render 'guide'
+    res.render 'guide',
+      user: req.user
 
   app.get '/contact', (req, res) ->
     res.render 'contact',
