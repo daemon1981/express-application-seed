@@ -48,6 +48,8 @@ module.exports = (app) ->
   )
 
   app.get '/signup', (req, res) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
     res.render 'user/signup',
       publicKey: config.reCaptcha.publicKey
       hasCaptcha: config.signup.captcha
@@ -66,7 +68,7 @@ module.exports = (app) ->
     if config.signup.captcha and req.isCaptchaValid is false
       return renderWithError 'Captcha is not correct'
     User.signup req.body.email, req.body.password, req.locale, (err, user) ->
-      return renderWithError('Account already exists') if err
+      return renderWithError(err.message) if err
       url = 'http://' + req.host + '/signup/validation?key=' + user.validationKey
       mailer.sendSignupConfirmation req.locale, user.email, url, (err, response) ->
         return next(err) if err
