@@ -11,60 +11,81 @@ fixturesData = require '../../fixtures/test.coffee'
 
 User = require '../../model/user'
 
-describe '** /signup **', ->
+describe '** signing up **', ->
   requestTest = {}
+  before (done) ->
+    async.series [(callback) ->
+      fixtures.load fixturesData.testUser, mongoose.connection, callback
+    , (callback) ->
+      User.findById fixturesData.testUser.User.fakeUser._id, (err, user) ->
+        requestTest = request(new App(user))
+        callback()
+    ], done
 
-  describe '** Logged in **', ->
-    before (done) ->
-      async.series [(callback) ->
-        fixtures.load fixturesData.testUser, mongoose.connection, callback
-      , (callback) ->
-        User.findById fixturesData.testUser.User.fakeUser._id, (err, user) ->
-          requestTest = request(new App(user))
-          callback()
-      ], done
+  describe '** /signup **', ->
 
-    describe 'GET', ->
-      it 'should redirect to /profile', (done) ->
-        requestTest.get('/signup').expect(302).end (err, res) ->
-          should.not.exist err
-          res.header.location.should.equal('/profile')
-          done()
+    describe '** Logged in **', ->
+      describe 'GET', ->
+        it 'should redirect to /profile', (done) ->
+          requestTest.get('/signup').expect(302).end (err, res) ->
+            should.not.exist err
+            res.header.location.should.equal('/profile')
+            done()
 
-  describe '** Logged out **', ->
-    before (done) ->
-      fixtures.load fixturesData.testUser, mongoose.connection, done
+    describe '** Logged out **', ->
 
-    describe 'GET', ->
-      it 'should return 200', (done) ->
-        request(new App()).get('/signup').expect(200).end (err, res) ->
-          should.not.exist err
-          done()
+      describe 'GET', ->
+        it 'should return 200', (done) ->
+          request(new App()).get('/signup').expect(200).end done
 
-    describe 'POST', ->
-      describe 'User not already registered', ->
-        it 'should redirect to /signupConfirmation when signup is successfull', (done) ->
-          request(new App()).post('/signup')
-            .send(email: 'new@email.com', password: 'password')
-            .expect(302).end (err, res) ->
-              should.not.exist(err)
-              res.header['location'].should.include('/signupConfirmation')
-              done()
-        it 'should render /signup with error if email is missing', (done) ->
-          request(new App()).post('/signup')
-            .send(password: 'password')
-            .expect(200).end (err, res) ->
-              should.not.exist(err)
-              $body = $(res.text);
-              $body.find('.alert.alert-danger').text().should.equal('×Form has errors')
-              done()
-      describe 'User already registered', ->
-        userData = fixturesData.testUser.User.fakeUser;
-        it 'should redirect to /login even if password is correct', (done) ->
-          request(new App()).post('/signup')
-            .send(email: userData.email, password: 'password')
-            .expect(200).end (err, res) ->
-              should.not.exist(err)
-              $body = $(res.text);
-              $body.find('.alert.alert-danger').text().should.equal('×Email already exists.')
-              done()
+      describe 'POST', ->
+        describe 'User not already registered', ->
+          it 'should redirect to /signupConfirmation when signup is successfull', (done) ->
+            request(new App()).post('/signup')
+              .send(email: 'new@email.com', password: 'password')
+              .expect(302).end (err, res) ->
+                should.not.exist(err)
+                res.header['location'].should.include('/signupConfirmation')
+                done()
+          it 'should render /signup with error if email is missing', (done) ->
+            request(new App()).post('/signup')
+              .send(password: 'password')
+              .expect(200).end (err, res) ->
+                should.not.exist(err)
+                $body = $(res.text);
+                $body.find('.alert.alert-danger').text().should.equal('×Form has errors')
+                done()
+        describe 'User already registered', ->
+          userData = fixturesData.testUser.User.fakeUser;
+          it 'should redirect to /login even if password is correct', (done) ->
+            request(new App()).post('/signup')
+              .send(email: userData.email, password: 'password')
+              .expect(200).end (err, res) ->
+                should.not.exist(err)
+                $body = $(res.text);
+                $body.find('.alert.alert-danger').text().should.equal('×Email already exists.')
+                done()
+
+  describe '** /signupConfirmation **', ->
+
+    describe '** Logged in **', ->
+      describe 'GET', ->
+        it 'should return 200', (done) ->
+          requestTest.get('/signupConfirmation').expect(200).end done
+
+    describe '** Logged out **', ->
+      describe 'GET', ->
+        it 'should return 200', (done) ->
+          request(new App()).get('/signupConfirmation').expect(200).end done
+
+  describe '** /signupValidation **', ->
+
+    describe '** Logged in **', ->
+      describe 'GET', ->
+        it 'should return 200', (done) ->
+          requestTest.get('/signupValidation').expect(200).end done
+
+    describe '** Logged out **', ->
+      describe 'GET', ->
+        it 'should return 200', (done) ->
+          request(new App()).get('/signupValidation').expect(200).end done
