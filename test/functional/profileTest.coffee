@@ -10,7 +10,7 @@ fixturesData = require '../../fixtures/test.coffee'
 
 User = require '../../model/user'
 
-describe '/profile', ->
+describe '** /profile **', ->
   fakeUser = {}
   requestTest = {}
 

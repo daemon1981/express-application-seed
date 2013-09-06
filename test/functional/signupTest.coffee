@@ -11,8 +11,7 @@ fixturesData = require '../../fixtures/test.coffee'
 
 User = require '../../model/user'
 
-describe '/signup', ->
-  fakeUser = {}
+describe '** /signup **', ->
   requestTest = {}
 
   describe '** Logged in **', ->
@@ -21,8 +20,7 @@ describe '/signup', ->
         fixtures.load fixturesData.testUser, mongoose.connection, callback
       , (callback) ->
         User.findById fixturesData.testUser.User.fakeUser._id, (err, user) ->
-          fakeUser = user
-          requestTest = request(new App(fakeUser))
+          requestTest = request(new App(user))
           callback()
       ], done
 

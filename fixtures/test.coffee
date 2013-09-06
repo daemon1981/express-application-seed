@@ -30,6 +30,15 @@ users =
     passwordHash: passwordHashToto # hash for password 'toto' and salt 'toto'
     language:     'fr'
     validated:    true
+  englishFakeUser:
+    _id:          new ObjectId()
+    firstName:    'Tutu'
+    lastName:     'Oxford'
+    email:        'tutu@tutu.com'
+    salt:         'titi'
+    passwordHash: passwordHashTiti # hash for password 'titi' and salt 'titi'
+    language:     'en'
+    validated:    true
   fakeUserNotValidated:
     _id:          new ObjectId()
     firstName:    'Titi'
@@ -44,3 +53,4 @@ module.exports =
     User:
       fakeUser: users.fakeUser
       fakeUserNotValidated: users.fakeUserNotValidated
+      englishFakeUser: users.englishFakeUser
