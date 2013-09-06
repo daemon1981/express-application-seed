@@ -94,11 +94,12 @@ describe '** locale **', ->
           callback()
       ], done
 
-    it "with fr should translate in french even if Accept-Language is different", (done) ->
-      requestConnected.get('/?lang=fr')
-        .set('Accept-Language', 'en;q=0.6,en;q=0.4')
-        .expect(200).end (err, res) ->
-          should.not.exist(err)
-          $body = $(res.text)
-          assert.equal 'Profil', $body.find('a[href="/profile"]:eq(0)').text()
-          done()
+    describe 'when ?lang=fr', ->
+      it 'with Accept-Language en-US and connected user language "en" should display in french', (done) ->
+        requestConnected.get('/?lang=fr')
+          .set('Accept-Language', 'en;q=0.6,en;q=0.4')
+          .expect(200).end (err, res) ->
+            should.not.exist(err)
+            $body = $(res.text)
+            assert.equal 'Profil', $body.find('a[href="/profile"]:eq(0)').text()
+            done()

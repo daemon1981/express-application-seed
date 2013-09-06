@@ -50,7 +50,7 @@ describe '** /login **', ->
               should.not.exist(err)
               res.header['location'].should.include('/profile')
               done()
-        it 'should redirect to /profile when authentication is wrong', (done) ->
+        it 'should redirect to /login when authentication is wrong', (done) ->
           request(new App()).post('/login')
             .send(email: userData.email, password: 'badpassword')
             .expect(302).end (err, res) ->
