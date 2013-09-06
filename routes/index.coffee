@@ -90,6 +90,8 @@ module.exports = (app) ->
     res.render 'user/signupValidation'
 
   app.get '/forgot/password', (req, res, next) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
     res.render 'user/forgotPassword'
 
   app.post '/forgot/password', (req, res, next) ->
