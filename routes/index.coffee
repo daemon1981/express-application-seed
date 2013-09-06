@@ -78,6 +78,8 @@ module.exports = (app) ->
     res.render 'user/signupConfirmation'
 
   app.get '/signup/validation', (req, res, next) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
     User.accountValidator req.query.key, (err, user) ->
       return res.redirect '/' if err
       mailer.sendAccountValidatedConfirmation req.locale, user.email, (err, response) ->

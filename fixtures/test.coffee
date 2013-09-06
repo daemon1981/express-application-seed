@@ -22,31 +22,32 @@ passwordHashTiti = convertUnicodesToString(passwordHashUnicodesTiti)
 
 users =
   fakeUser:
-    _id:          new ObjectId()
-    firstName:    'Toto'
-    lastName:     'Dupont'
-    email:        'toto@toto.com'
-    salt:         'toto'
-    passwordHash: passwordHashToto # hash for password 'toto' and salt 'toto'
-    language:     'fr'
-    validated:    true
+    _id:           new ObjectId()
+    firstName:     'Toto'
+    lastName:      'Dupont'
+    email:         'toto@toto.com'
+    salt:          'toto'
+    passwordHash:  passwordHashToto # hash for password 'toto' and salt 'toto'
+    language:      'fr'
+    validated:     true
   englishFakeUser:
-    _id:          new ObjectId()
-    firstName:    'Tutu'
-    lastName:     'Oxford'
-    email:        'tutu@tutu.com'
-    salt:         'titi'
-    passwordHash: passwordHashTiti # hash for password 'titi' and salt 'titi'
-    language:     'en'
-    validated:    true
+    _id:           new ObjectId()
+    firstName:     'Tutu'
+    lastName:      'Oxford'
+    email:         'tutu@tutu.com'
+    salt:          'titi'
+    passwordHash:  passwordHashTiti # hash for password 'titi' and salt 'titi'
+    language:      'en'
+    validated:     true
   fakeUserNotValidated:
-    _id:          new ObjectId()
-    firstName:    'Titi'
-    lastName:     'Dupont'
-    email:        'titi@titi.com'
-    salt:         'titi'
-    passwordHash: passwordHashTiti # hash for password 'titi' and salt 'titi'
-    language:     'fr'
+    _id:           new ObjectId()
+    firstName:     'Titi'
+    lastName:      'Dupont'
+    email:         'titi@titi.com'
+    salt:          'titi'
+    passwordHash:  passwordHashTiti # hash for password 'titi' and salt 'titi'
+    language:      'fr'
+    validationKey: 'complex-validation-key'
 
 module.exports =
   testUser:

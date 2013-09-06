@@ -28,6 +28,7 @@ App = (connectedUser) ->
     '/login',
     '/signup',
     '/signupConfirmation',
+    '/signup/validation',
     '/signupValidation',
     '/forgot/password',
     '/reset/password',

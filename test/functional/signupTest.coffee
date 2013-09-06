@@ -12,13 +12,13 @@ fixturesData = require '../../fixtures/test.coffee'
 User = require '../../model/user'
 
 describe '** signing up **', ->
-  requestTest = {}
+  connectedRequest = {}
   before (done) ->
     async.series [(callback) ->
       fixtures.load fixturesData.testUser, mongoose.connection, callback
     , (callback) ->
       User.findById fixturesData.testUser.User.fakeUser._id, (err, user) ->
-        requestTest = request(new App(user))
+        connectedRequest = request(new App(user))
         callback()
     ], done
 
@@ -27,7 +27,7 @@ describe '** signing up **', ->
     describe '** Logged in **', ->
       describe 'GET', ->
         it 'should redirect to /profile', (done) ->
-          requestTest.get('/signup').expect(302).end (err, res) ->
+          connectedRequest.get('/signup').expect(302).end (err, res) ->
             should.not.exist err
             res.header.location.should.equal('/profile')
             done()
@@ -71,7 +71,7 @@ describe '** signing up **', ->
     describe '** Logged in **', ->
       describe 'GET', ->
         it 'should return 200', (done) ->
-          requestTest.get('/signupConfirmation').expect(200).end done
+          connectedRequest.get('/signupConfirmation').expect(200).end done
 
     describe '** Logged out **', ->
       describe 'GET', ->
@@ -83,9 +83,34 @@ describe '** signing up **', ->
     describe '** Logged in **', ->
       describe 'GET', ->
         it 'should return 200', (done) ->
-          requestTest.get('/signupValidation').expect(200).end done
+          connectedRequest.get('/signupValidation').expect(200).end done
 
     describe '** Logged out **', ->
       describe 'GET', ->
         it 'should return 200', (done) ->
           request(new App()).get('/signupValidation').expect(200).end done
+
+  describe '** /signup/validation **', ->
+
+    describe '** Logged in **', ->
+      describe 'GET', ->
+        it 'should return 200', (done) ->
+          connectedRequest.get('/signup/validation').expect(302).end (err, res) ->
+            should.not.exist(err)
+            res.header['location'].should.include('/profile')
+            done()
+
+    describe '** Logged out **', ->
+      describe 'GET', ->
+        it 'should redirect to /signupValidation if no user has this key', (done) ->
+          url = '/signup/validation?key=not-existing-key'
+          request(new App()).get(url).expect(302).end (err, res) ->
+            should.not.exist(err)
+            res.header['location'].should.include('/')
+            done()
+        it 'should redirect to /signupValidation if key is correct', (done) ->
+          url = '/signup/validation?key=' + fixturesData.testUser.User.fakeUserNotValidated.validationKey
+          request(new App()).get(url).expect(302).end (err, res) ->
+            should.not.exist(err)
+            res.header['location'].should.include('/signupValidation')
+            done()
