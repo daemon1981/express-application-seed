@@ -47,7 +47,6 @@ describe '/signup', ->
       describe 'User not already registered', ->
         it 'should redirect to /signupConfirmation when signup is successfull', (done) ->
           request(new App()).post('/signup')
-            .set('Accept-Language', 'fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4')
             .send(email: 'new@email.com', password: 'password')
             .expect(302).end (err, res) ->
               should.not.exist(err)
@@ -55,18 +54,16 @@ describe '/signup', ->
               done()
         it 'should render /signup with error if email is missing', (done) ->
           request(new App()).post('/signup')
-            .set('Accept-Language', 'fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4')
             .send(password: 'password')
             .expect(200).end (err, res) ->
               should.not.exist(err)
               $body = $(res.text);
-              $body.find('.alert.alert-danger').text().should.equal('×Le formulaire comporte des erreurs')
+              $body.find('.alert.alert-danger').text().should.equal('×Form has errors')
               done()
       describe 'User already registered', ->
         userData = fixturesData.testUser.User.fakeUser;
         it 'should redirect to /login even if password is correct', (done) ->
           request(new App()).post('/signup')
-            .set('Accept-Language', 'fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4')
             .send(email: userData.email, password: 'password')
             .expect(200).end (err, res) ->
               should.not.exist(err)

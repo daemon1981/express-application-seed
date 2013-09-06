@@ -43,5 +43,6 @@
 	"Validator \"required\" failed for path message with value ``": "Ce champs est requis",
 	"Validation failed": "Le formulaire comporte des erreurs",
 	"Validator \"required\" failed for path subject with value ``": "Ce champs est requis",
-	"message-contact-captcha-error": "Le formulaire comporte des erreurs"
+	"message-contact-captcha-error": "Le formulaire comporte des erreurs",
+	"Email already exists.": "L'email existe déjà."
 }
