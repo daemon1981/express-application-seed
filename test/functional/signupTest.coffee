@@ -47,22 +47,22 @@ describe '** signing up **', ->
                 should.not.exist(err)
                 res.header['location'].should.include('/signupConfirmation')
                 done()
-          it 'should render /signup with error if email is missing', (done) ->
+          it 'should render /signup with error "×Form has errors" if email is missing', (done) ->
             request(new App()).post('/signup')
               .send(password: 'password')
               .expect(200).end (err, res) ->
                 should.not.exist(err)
-                $body = $(res.text);
+                $body = $(res.text)
                 $body.find('.alert.alert-danger').text().should.equal('×Form has errors')
                 done()
         describe 'User already registered', ->
           userData = fixturesData.testUser.User.fakeUser;
-          it 'should redirect to /login even if password is correct', (done) ->
+          it 'should render /signup with error "×Email already exists."', (done) ->
             request(new App()).post('/signup')
               .send(email: userData.email, password: 'password')
               .expect(200).end (err, res) ->
                 should.not.exist(err)
-                $body = $(res.text);
+                $body = $(res.text)
                 $body.find('.alert.alert-danger').text().should.equal('×Email already exists.')
                 done()
 

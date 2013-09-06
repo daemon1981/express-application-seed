@@ -92,9 +92,12 @@ module.exports = (app) ->
   app.get '/forgot/password', (req, res, next) ->
     if req.isAuthenticated()
       return res.redirect '/profile'
-    res.render 'user/forgotPassword'
+    res.render 'user/forgotPassword',
+      successMessage: req.flash('success')[0]
 
   app.post '/forgot/password', (req, res, next) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
     User.findOne email: req.body.email, (err, user) ->
       return next(err) if err
       if !user
@@ -104,7 +107,8 @@ module.exports = (app) ->
         url = 'http://' + req.host + '/reset/password?key=' + user.regeneratePasswordKey
         mailer.sendForgotPassword req.locale, user.email, url, (err, response) ->
           return next(err) if err
-          res.render 'user/forgotPassword', successMessage: 'We\'ve sent to you a email. Check your mail box.'
+          req.flash 'success', 'We\'ve sent to you a email. Check your mail box.'
+          res.redirect 'forgot/password'
 
   app.get '/reset/password', (req, res, next) ->
     User.findOne regeneratePasswordKey: req.query.key, (err, user) ->
