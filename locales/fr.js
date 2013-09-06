@@ -45,5 +45,7 @@
 	"Validator \"required\" failed for path subject with value ``": "Ce champs est requis",
 	"message-contact-captcha-error": "Le formulaire comporte des erreurs",
 	"Email already exists.": "L'email existe déjà.",
-	"Email was not found": "L'email n'est pas existant"
+	"Email was not found": "L'email n'est pas existant",
+	"You must provide a password": "Vous devez inscrire un mot de passe",
+	"You must provide a password more complicated": "Vous devez inscrire un mot de passe plus compliqué"
 }

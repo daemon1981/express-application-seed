@@ -30,6 +30,7 @@ users =
     passwordHash:  passwordHashToto # hash for password 'toto' and salt 'toto'
     language:      'fr'
     validated:     true
+    regeneratePasswordKey: 'complex-regenerate-password-key'
   englishFakeUser:
     _id:           new ObjectId()
     firstName:     'Tutu'
@@ -39,6 +40,7 @@ users =
     passwordHash:  passwordHashTiti # hash for password 'titi' and salt 'titi'
     language:      'en'
     validated:     true
+    regeneratePasswordKey: null
   fakeUserNotValidated:
     _id:           new ObjectId()
     firstName:     'Titi'
@@ -48,6 +50,7 @@ users =
     passwordHash:  passwordHashTiti # hash for password 'titi' and salt 'titi'
     language:      'fr'
     validationKey: 'complex-validation-key'
+    regeneratePasswordKey: 'complex-regenerate-password-key-account-not-validated'
 
 module.exports =
   testUser:

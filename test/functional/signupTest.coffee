@@ -102,7 +102,7 @@ describe '** signing up **', ->
 
     describe '** Logged out **', ->
       describe 'GET', ->
-        it 'should redirect to /signupValidation if no user has this key', (done) ->
+        it 'should redirect to homepage if no user has this key', (done) ->
           url = '/signup/validation?key=not-existing-key'
           request(new App()).get(url).expect(302).end (err, res) ->
             should.not.exist(err)

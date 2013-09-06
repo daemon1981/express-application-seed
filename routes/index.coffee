@@ -40,6 +40,7 @@ module.exports = (app) ->
       return res.redirect '/profile'
     res.render 'user/login',
       errorMessage: req.flash('error')[0]
+      successMessage: req.flash('success')[0]
 
   app.post '/login', passport.authenticate('local',
     successRedirect: '/profile'
@@ -108,29 +109,44 @@ module.exports = (app) ->
         mailer.sendForgotPassword req.locale, user.email, url, (err, response) ->
           return next(err) if err
           req.flash 'success', 'We\'ve sent to you a email. Check your mail box.'
-          res.redirect 'forgot/password'
+          res.redirect '/'
 
   app.get '/reset/password', (req, res, next) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
+    if !req.query.key
+      return res.redirect '/'
     User.findOne regeneratePasswordKey: req.query.key, (err, user) ->
       return next(err) if err
       if !user
         # @todo: detect here if an IP is searching for available key otherwise block this IP for few days
         return res.redirect '/'
+      if !user.isValidated()
+        return res.redirect '/'
       res.render 'user/resetPassword', regeneratePasswordKey: user.regeneratePasswordKey
 
   app.post '/reset/password', (req, res, next) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
     User.findOne regeneratePasswordKey: req.body.regeneratePasswordKey, (err, user) ->
       return next(err) if err
       if !user
         # @todo: detect here if an IP is searching for available key otherwise block this IP for few days
         return res.redirect '/'
+      if !user.isValidated()
+        return res.redirect '/'
+      if !req.body.password
+        return res.render 'user/resetPassword', errorMessage: 'You must provide a password'
+      if !User.isPasswordComplexEnough(req.body.password)
+        return res.render 'user/resetPassword', errorMessage: 'You must provide a password more complicated'
       if req.body.password
         user.updatePassword req.body.password, (err) ->
           return next(err) if err
           url = 'http://' + req.host + '/forgot/password'
           mailer.sendPasswordReseted req.locale, user.email, url, (err, response) ->
             return next(err) if err
-            res.render 'user/resetPassword', successMessage: 'Your password has been updated. Please login again.'
+            req.flash 'success', 'Your password has been updated. Please login again.'
+            res.redirect '/login'
 
   app.get '/auth/facebook', passport.authenticate('facebook',
     scope: 'email'
