@@ -43,5 +43,9 @@
 	"Validator \"required\" failed for path message with value ``": "This field is required",
 	"Validation failed": "Form has errors",
 	"Validator \"required\" failed for path subject with value ``": "This field is required",
-	"message-contact-captcha-error": "Captcha is not correct"
+	"message-contact-captcha-error": "Captcha is not correct",
+	"Email already exists.": "Email already exists.",
+	"Email was not found": "Email was not found",
+	"You must provide a password": "You must provide a password",
+	"You must provide a password more complicated": "You must provide a password more complicated"
 }

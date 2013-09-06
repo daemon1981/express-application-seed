@@ -10,13 +10,19 @@ exports.checkAuthentication = (publicPathes, redirectPath) ->
       next()
 
 exports.setLocale  = (languages) ->
+  supported = new locale.Locales(languages)
+
   return (req, res, next) ->
-    currentLocal = req.locale
+    currentLocal = new locale.Locales(req.locale).best(supported)
     if req.user and req.user.language
       currentLocal = req.user.language
     if req.query.lang
-      supported = new locale.Locales(languages)
       currentLocal = new locale.Locales(req.query.lang).best(supported)
+
+    # set locale for views
     res.locals.locale = currentLocal
+    # set locale in request
+    req.locale = currentLocal
+    # set locale for i18n
     i18n.setLocale currentLocal
     next()

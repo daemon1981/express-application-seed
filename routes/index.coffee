@@ -2,10 +2,10 @@ passport = require 'passport'
 config   = require 'config'
 request  = require 'request'
 
-User     = require('../model/user')
-Contact  = require('../model/contact')
-Mailer   = require('../lib/mailer')
-Image    = require('../lib/image')
+User     = require '../model/user'
+Contact  = require '../model/contact'
+Mailer   = require '../lib/mailer'
+Image    = require '../lib/image'
 
 image  = new Image(config.Upload)
 mailer = new Mailer()
@@ -36,15 +36,21 @@ module.exports = (app) ->
       user: req.user
 
   app.get '/login', (req, res) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
     res.render 'user/login',
       errorMessage: req.flash('error')[0]
+      successMessage: req.flash('success')[0]
 
   app.post '/login', passport.authenticate('local',
     successRedirect: '/profile'
     failureRedirect: '/login'
     failureFlash:    'message-login-error'
   )
+
   app.get '/signup', (req, res) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
     res.render 'user/signup',
       publicKey: config.reCaptcha.publicKey
       hasCaptcha: config.signup.captcha
@@ -63,7 +69,7 @@ module.exports = (app) ->
     if config.signup.captcha and req.isCaptchaValid is false
       return renderWithError 'Captcha is not correct'
     User.signup req.body.email, req.body.password, req.locale, (err, user) ->
-      return renderWithError('Account already exists') if err
+      return renderWithError(err.message) if err
       url = 'http://' + req.host + '/signup/validation?key=' + user.validationKey
       mailer.sendSignupConfirmation req.locale, user.email, url, (err, response) ->
         return next(err) if err
@@ -73,6 +79,8 @@ module.exports = (app) ->
     res.render 'user/signupConfirmation'
 
   app.get '/signup/validation', (req, res, next) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
     User.accountValidator req.query.key, (err, user) ->
       return res.redirect '/' if err
       mailer.sendAccountValidatedConfirmation req.locale, user.email, (err, response) ->
@@ -83,9 +91,14 @@ module.exports = (app) ->
     res.render 'user/signupValidation'
 
   app.get '/forgot/password', (req, res, next) ->
-    res.render 'user/forgotPassword'
+    if req.isAuthenticated()
+      return res.redirect '/profile'
+    res.render 'user/forgotPassword',
+      successMessage: req.flash('success')[0]
 
   app.post '/forgot/password', (req, res, next) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
     User.findOne email: req.body.email, (err, user) ->
       return next(err) if err
       if !user
@@ -95,29 +108,45 @@ module.exports = (app) ->
         url = 'http://' + req.host + '/reset/password?key=' + user.regeneratePasswordKey
         mailer.sendForgotPassword req.locale, user.email, url, (err, response) ->
           return next(err) if err
-          res.render 'user/forgotPassword', successMessage: 'We\'ve sent to you a email. Check your mail box.'
+          req.flash 'success', 'We\'ve sent to you a email. Check your mail box.'
+          res.redirect '/'
 
   app.get '/reset/password', (req, res, next) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
+    if !req.query.key
+      return res.redirect '/'
     User.findOne regeneratePasswordKey: req.query.key, (err, user) ->
       return next(err) if err
       if !user
         # @todo: detect here if an IP is searching for available key otherwise block this IP for few days
         return res.redirect '/'
+      if !user.isValidated()
+        return res.redirect '/'
       res.render 'user/resetPassword', regeneratePasswordKey: user.regeneratePasswordKey
 
   app.post '/reset/password', (req, res, next) ->
+    if req.isAuthenticated()
+      return res.redirect '/profile'
     User.findOne regeneratePasswordKey: req.body.regeneratePasswordKey, (err, user) ->
       return next(err) if err
       if !user
         # @todo: detect here if an IP is searching for available key otherwise block this IP for few days
         return res.redirect '/'
+      if !user.isValidated()
+        return res.redirect '/'
+      if !req.body.password
+        return res.render 'user/resetPassword', errorMessage: 'You must provide a password'
+      if !User.isPasswordComplexEnough(req.body.password)
+        return res.render 'user/resetPassword', errorMessage: 'You must provide a password more complicated'
       if req.body.password
         user.updatePassword req.body.password, (err) ->
           return next(err) if err
           url = 'http://' + req.host + '/forgot/password'
           mailer.sendPasswordReseted req.locale, user.email, url, (err, response) ->
             return next(err) if err
-            res.render 'user/resetPassword', successMessage: 'Your password has been updated. Please login again.'
+            req.flash 'success', 'Your password has been updated. Please login again.'
+            res.redirect '/login'
 
   app.get '/auth/facebook', passport.authenticate('facebook',
     scope: 'email'
@@ -154,7 +183,8 @@ module.exports = (app) ->
     image.destroyUserPicture req.user
 
   app.get '/guide', (req, res) ->
-    res.render 'guide'
+    res.render 'guide',
+      user: req.user
 
   app.get '/contact', (req, res) ->
     res.render 'contact',
