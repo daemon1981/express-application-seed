@@ -89,6 +89,12 @@ UserSchema.statics.findOrCreateFaceBookUser = (profile, done) ->
           name:  profile.displayName
       ).save done
 
+UserSchema.statics.isPasswordComplexEnough = (password) ->
+  if !password || password.length < 3
+    return false
+
+  true
+
 ###
 Methods
 ###
@@ -123,6 +129,9 @@ UserSchema.methods.getName = () ->
   if !this.firstName or !this.firstName
     return this.email
   return this.firstName + ' ' + this.lastName
+
+UserSchema.methods.isValidated = () ->
+  this.validated is true
 
 User = mongoose.model "User", UserSchema
 
