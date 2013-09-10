@@ -1,9 +1,11 @@
 {
-  "name": "Authentication",
-  "version": "0.0.1",
-  "private": true,
+  "name": "Project plinth in node.js",
+  "description": "Project plinth in node.js",
+  "version": "1.0",
+  "author": "Damien Saillard",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "coffee app.coffee",
+    "test": "make test"
   },
   "dependencies": {
     "express": "3.2.6"
@@ -37,7 +39,16 @@
     , "sinon": "v1.7.3"
     , "supertest": "latest"
   },
-  "scripts": {
-    "test": "make test"
-  }
+  "keywords": [
+    "nodeJs",
+    "Coffeescript",
+    "ExpressJs",
+    "MongooseJs",
+    "Jade",
+    "PassportJs",
+    "Nodemailer",
+    "Formidable"
+  ],
+  "repository": "git://github.com/daemon1981/express-site-plinth-example",
+  "main": "app"
 }
