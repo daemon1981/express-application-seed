@@ -1,7 +1,7 @@
 {
-  "name": "Project plinth in node.js",
+  "name": "express-site-plinth-example",
   "description": "Project plinth in node.js",
-  "version": "1.0",
+  "version": "0.0.1",
   "author": "Damien Saillard",
   "scripts": {
     "start": "coffee app.coffee",
