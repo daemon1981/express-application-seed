@@ -1,15 +1,20 @@
+REPORTER = dot
+
 check: test
 
 test:
-	NODE_ENV=test mocha --compilers coffee:coffee-script --recursive --reporter spec --timeout 2000 test
+	NODE_ENV=test mocha --compilers coffee:coffee-script --recursive --reporter $(REPORTER) --timeout 2000 test
 
 test-unit:
-	NODE_ENV=test mocha --compilers coffee:coffee-script --recursive --reporter spec test/unit
+	NODE_ENV=test mocha --compilers coffee:coffee-script --recursive --reporter $(REPORTER) test/unit
 
 test-functional:
-	NODE_ENV=test mocha --compilers coffee:coffee-script --recursive --reporter spec --timeout 2000 test/functional
+	NODE_ENV=test mocha --compilers coffee:coffee-script --recursive --reporter $(REPORTER) --timeout 2000 test/functional
 
-test-report:
-	NODE_ENV=test mocha --compilers coffee:coffee-script --recursive --reporter markdown --timeout 2000 test > ./test.md
+test-unit-report:
+	NODE_ENV=test mocha --compilers coffee:coffee-script --recursive --reporter markdown test/unit > ./test-unit.md
+
+test-functional-report:
+	NODE_ENV=test mocha --compilers coffee:coffee-script --recursive --reporter markdown --timeout 2000 test/functional > ./test-functional.md
 
 .PHONY: test test-unit test-functional test-report
