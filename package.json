@@ -3,10 +3,6 @@
   "description": "Project plinth in node.js",
   "version": "0.0.1",
   "author": "Damien Saillard",
-  "scripts": {
-    "start": "coffee app.coffee",
-    "test": "make test"
-  },
   "dependencies": {
     "express": "3.2.6"
     , "jade": "= 0.31.2"
@@ -37,7 +33,8 @@
   "devDependencies": {
     "should": "1.2.2"
     , "sinon": "v1.7.3"
-    , "supertest": "latest"
+    , "supertest": "0.7.1"
+    , "mocha": "1.12.1"
   },
   "keywords": [
     "nodeJs",
@@ -50,5 +47,9 @@
     "Formidable"
   ],
   "repository": "git://github.com/daemon1981/express-site-plinth-example",
-  "main": "app"
+  "main": "app",
+  "scripts": {
+    "start": "coffee app.coffee",
+    "test": "make test"
+  }
 }
