@@ -1,4 +1,4 @@
-# Project plinth in node.js
+# Project plinth in node.js [![Build Status](https://secure.travis-ci.org/daemon1981/express-site-plinth-example.png)](https://travis-ci.org/daemon1981/express-site-plinth-example)
 
 ## Main librairies used
 
