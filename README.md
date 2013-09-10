@@ -1,6 +1,13 @@
-# Node-Plinth
+# Project plinth in node.js
 
-Web site plinth using awesome libs.
+Main librairies used are:
+[Coffeescript](https://github.com/jashkenas/coffee-script)
+[ExpressJs](https://github.com/visionmedia/express)
+[MongooseJs](https://github.com/LearnBoost/mongoose)
+[Jade](https://github.com/visionmedia/jade)
+[PassportJs](https://github.com/jaredhanson/passport)
+[Nodemailer](https://github.com/andris9/Nodemailer)
+[Formidable](https://github.com/felixge/node-formidable)
 
 ## Setup
 
@@ -26,5 +33,14 @@ coffee -wcb -o public/javascripts/ public/coffeescript/*.coffee
 
 launch unit tests:
 ```
-NODE_ENV=test mocha --compilers coffee:coffee-script --reporter spec --recursive test
+make test-unit
 ```
+
+[Unit tests table of content](https://github.com/daemon1981/express-site-plinth-example/blob/master/test-unit.md)
+
+launch functional tests:
+```
+make test-functional
+```
+
+[Functional tests table of content](https://github.com/daemon1981/express-site-plinth-example/blob/master/test-functional.md)
