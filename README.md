@@ -25,6 +25,8 @@ bower install
 
 ### Prerequisite
 
+[Install Redis](http://redis.io/topics/quickstart)
+
 compile client coffeescripts on save:
 ```
 coffee -wcb -o public/javascripts/ public/coffeescript/*.coffee
