@@ -1,13 +1,14 @@
 # Project plinth in node.js
 
-Main librairies used are:
-[Coffeescript](https://github.com/jashkenas/coffee-script)
-[ExpressJs](https://github.com/visionmedia/express)
-[MongooseJs](https://github.com/LearnBoost/mongoose)
-[Jade](https://github.com/visionmedia/jade)
-[PassportJs](https://github.com/jaredhanson/passport)
-[Nodemailer](https://github.com/andris9/Nodemailer)
-[Formidable](https://github.com/felixge/node-formidable)
+## Main librairies used
+
+  * [Coffeescript](https://github.com/jashkenas/coffee-script)
+  * [ExpressJs](https://github.com/visionmedia/express)
+  * [MongooseJs](https://github.com/LearnBoost/mongoose)
+  * [Jade](https://github.com/visionmedia/jade)
+  * [PassportJs](https://github.com/jaredhanson/passport)
+  * [Nodemailer](https://github.com/andris9/Nodemailer)
+  * [Formidable](https://github.com/felixge/node-formidable)
 
 ## Setup
 
