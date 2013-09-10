@@ -32,16 +32,21 @@ coffee -wcb -o public/javascripts/ public/coffeescript/*.coffee
 
 ## Tests
 
+launch tests:
+```
+make REPORTER=dot test
+```
+
 launch unit tests:
 ```
-make test-unit
+make REPORTER=dot test-unit
 ```
 
 [Unit tests table of content](https://github.com/daemon1981/express-site-plinth-example/blob/master/test-unit.md)
 
 launch functional tests:
 ```
-make test-functional
+make REPORTER=dot test-functional
 ```
 
 [Functional tests table of content](https://github.com/daemon1981/express-site-plinth-example/blob/master/test-functional.md)

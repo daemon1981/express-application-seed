@@ -36,5 +36,8 @@
     "should": "1.2.2"
     , "sinon": "v1.7.3"
     , "supertest": "latest"
+  },
+  "scripts": {
+    "test": "make test"
   }
 }

@@ -1,4 +1,3 @@
-NODE_ENV=test mocha --compilers coffee:coffee-script --recursive --reporter markdown test/unit
 # TOC
    - [user](#user)
      - [#signup()](#user-signup)

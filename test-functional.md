@@ -1,4 +1,3 @@
-NODE_ENV=test mocha --compilers coffee:coffee-script --recursive --reporter markdown --timeout 2000 test/functional
 # TOC
    - [** locale **](#-locale-)
      - [by default inspect Accept-Language in http header](#-locale--by-default-inspect-accept-language-in-http-header)
