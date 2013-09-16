@@ -60,18 +60,28 @@ describe 'Profile', ->
     describe 'When logged in', ->
 
       describe 'Accessing forgot password page', ->
-        it 'should redirect to /profile', (done) ->
-          connectedRequest.get('/request/reset/password').expect(302).end (err, res) ->
-            should.not.exist(err)
-            res.header['location'].should.include('/profile')
-            done()
+        it 'should return 200', (done) ->
+          connectedRequest.get('/request/reset/password').expect(200).end done
 
-      describe 'Trying submitting email by http post call', ->
-        it 'should redirect to /profile', (done) ->
-          connectedRequest.post('/request/reset/password').expect(302).end (err, res) ->
-            should.not.exist(err)
-            res.header['location'].should.include('/profile')
-            done()
+      describe 'Submitting email', ->
+        it 'should return 200 with warning "×Email was not found" if email not found', (done) ->
+          connectedRequest.post('/request/reset/password')
+            .send(email: 'not@known.email')
+            .expect(200)
+            .end (err, res) ->
+              should.not.exist(err)
+              $body = $(res.text)
+              should.exist($body.find('.alert.alert-warning'))
+              should.exist($body.find('.alert.alert-warning').text())
+              done()
+        it 'should redirect to / if email is found', (done) ->
+          connectedRequest.post('/request/reset/password')
+            .send(email: fixturesData.testUser.User.fakeUser.email)
+            .expect(302)
+            .end (err, res) ->
+              should.not.exist(err)
+              res.header['location'].should.include('/')
+              done()
 
     describe 'When logged out', ->
 

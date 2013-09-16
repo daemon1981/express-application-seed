@@ -91,14 +91,10 @@ module.exports = (app) ->
     res.render 'user/signupValidation'
 
   app.get '/request/reset/password', (req, res, next) ->
-    if req.isAuthenticated()
-      return res.redirect '/profile'
     res.render 'user/requestForResetingPassword',
       successMessage: req.flash('success')[0]
 
   app.post '/request/reset/password', (req, res, next) ->
-    if req.isAuthenticated()
-      return res.redirect '/profile'
     User.findOne email: req.body.email, (err, user) ->
       return next(err) if err
       if !user
