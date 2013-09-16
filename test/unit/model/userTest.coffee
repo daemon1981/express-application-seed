@@ -8,11 +8,11 @@ fixtures     = require 'pow-mongoose-fixtures'
 
 User         = require "../../../model/user"
 
-describe "user", ->
+describe "User", ->
   beforeEach (done) ->
     fixtures.load {User: []}, mongoose.connection, done
 
-  describe "#signup()", ->
+  describe "When signing up 'signup()'", ->
     it "should create a user and set validated to false", (done) ->
       email = 'toto@toto.com'
       User.signup email, 'passwd', 'fr', (err) ->
@@ -32,7 +32,7 @@ describe "user", ->
           should.exist(err)
           done()
 
-  describe "#accountValidator()", ->
+  describe "When validating an account 'accountValidator()'", ->
     it "should valid account", (done) ->
       email = 'toto@toto.com'
       userTest  = {}
@@ -53,7 +53,7 @@ describe "user", ->
         should.exist(err)
         done()
 
-  describe "#isValidUserPassword()", ->
+  describe "When checking user password is valid 'isValidUserPassword()'", ->
     passwd = 'passwd'
     email = 'toto@toto.com'
     user = {}
@@ -61,8 +61,8 @@ describe "user", ->
       User.signup email, passwd, 'fr', (err, newUser) ->
         user = newUser
         done()
-    describe "user not validated", ->
-      describe "when password is correct", ->
+    describe "User not validated", ->
+      describe "Password is correct", ->
         it "should not valid user password", (done) ->
           User.isValidUserPassword email, passwd, (err, data, msg) ->
             should.not.exist(err)
@@ -70,18 +70,18 @@ describe "user", ->
             assert.equal false, data
             assert.deepEqual msg, message: 'Account not validated.'
             done()
-    describe "user validated", ->
+    describe "User validated", ->
       beforeEach (done) ->
         user.validated = true
         user.save done
-      describe "when password is correct", ->
+      describe "Password is correct", ->
         it "should valid user password", (done) ->
           User.isValidUserPassword email, passwd, (err, data, msg) ->
             should.not.exist(err)
             should.not.exist(msg)
             assert.equal user.email, data.email
             done()
-      describe "when password is not correct", ->
+      describe "Password is not correct", ->
         it "should not valid user password", (done) ->
           User.isValidUserPassword email, 'badpasswd', (err, data, msg) ->
             should.not.exist(err)
@@ -90,7 +90,7 @@ describe "user", ->
             assert.deepEqual msg, message: 'Incorrect password.'
             done()
 
-  describe "#requestResetPassword()", ->
+  describe "When requesting for password reset 'requestResetPassword()'", ->
     passwd = 'passwd'
     email = 'toto@toto.com'
     user = {}
@@ -105,14 +105,14 @@ describe "user", ->
         should.exist(modifedUser.regeneratePasswordDate)
         done()
 
-  describe "#findOrCreateFaceBookUser()", ->
+  describe "When finding facebook user 'findOrCreateFaceBookUser()'", ->
     email = 'toto@toto.com'
     profile =
       id: '4ds5fd6'
       emails: [value: email]
       displayName: 'Toto Dupond'
       language: 'fr'
-    describe "when not existing", (done) ->
+    describe "When user doesn't exists", (done) ->
       it "should create facebook user", (done) ->
         User.findOrCreateFaceBookUser profile, (err, user) ->
           should.not.exist(err)
@@ -121,7 +121,7 @@ describe "user", ->
             users[0].email.should.equal(email)
             users[0].validated.should.equal(true)
             done()
-    describe "when existing", (done) ->
+    describe "When user exists", (done) ->
       it "should retrieve facebook user", (done) ->
         User.findOrCreateFaceBookUser profile, (err, user) ->
           should.not.exist(err)

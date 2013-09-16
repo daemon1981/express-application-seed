@@ -15,7 +15,7 @@ User        = require "../../../model/user"
 
 image = new Image(config.Upload)
 
-describe "image", ->
+describe "Image", ->
   userEmail = 'toto@toto.com'
 
   before (done) ->
@@ -23,7 +23,7 @@ describe "image", ->
       done(err) if err
       User.signup userEmail, 'passwd', 'fr', done
 
-  describe "#validate()", ->
+  describe "When validating image 'validate()'", ->
     it "should validate when file is correct", (done) ->
       image.validate { size: 30, name: 'dummy.jpg' }, (err) ->
         should.not.exists err
@@ -44,7 +44,7 @@ describe "image", ->
         assert.equal 'Filetype not allowed', err.message
         done()
 
-  describe "#createUserDir()", ->
+  describe "When creating user directory 'createUserDir()'", ->
     userTest = {}
     testDir  = '/tmp/test-createUserDir'
 
@@ -65,7 +65,7 @@ describe "image", ->
           assert.ok exists
           done()
 
-  describe "#saveUserPicture()", ->
+  describe "When saving user picture 'saveUserPicture()'", ->
     userTest = {}
     testDir  = '/tmp/test-createUserDir'
     fileName = 'homer.jpg'
