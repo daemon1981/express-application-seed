@@ -27,9 +27,9 @@ describe "Mailer", ->
         assert(mailer.sendMail.called);
         done()
 
-  describe "When sending forgot password process 'sendForgotPassword()'", ->
+  describe "When sending request for reseting password 'sendRequestForResetingPassword()'", ->
     it "should call sendMail", (done) ->
-      mailer.sendForgotPassword 'en', 'toto@toto.com', 'http://dummy-url.com', (err, response) ->
+      mailer.sendRequestForResetingPassword 'en', 'toto@toto.com', 'http://dummy-url.com', (err, response) ->
         should.not.exists(err)
         assert(mailer.sendMail.called);
         done()

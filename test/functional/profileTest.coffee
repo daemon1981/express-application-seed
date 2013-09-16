@@ -61,14 +61,14 @@ describe 'Profile', ->
 
       describe 'Accessing forgot password page', ->
         it 'should redirect to /profile', (done) ->
-          connectedRequest.get('/forgot/password').expect(302).end (err, res) ->
+          connectedRequest.get('/request/reset/password').expect(302).end (err, res) ->
             should.not.exist(err)
             res.header['location'].should.include('/profile')
             done()
 
       describe 'Trying submitting email by http post call', ->
         it 'should redirect to /profile', (done) ->
-          connectedRequest.post('/forgot/password').expect(302).end (err, res) ->
+          connectedRequest.post('/request/reset/password').expect(302).end (err, res) ->
             should.not.exist(err)
             res.header['location'].should.include('/profile')
             done()
@@ -77,11 +77,11 @@ describe 'Profile', ->
 
       describe 'Accessing forgot password page', ->
         it 'should return 200', (done) ->
-          request(new App()).get('/forgot/password').expect(200).end done
+          request(new App()).get('/request/reset/password').expect(200).end done
 
       describe 'Submitting email', ->
         it 'should return 200 with warning "×Email was not found" if email not found', (done) ->
-          request(new App()).post('/forgot/password')
+          request(new App()).post('/request/reset/password')
             .send(email: 'not@known.email')
             .expect(200)
             .end (err, res) ->
@@ -90,7 +90,7 @@ describe 'Profile', ->
               $body.find('.alert.alert-warning').text().should.equal('×Email was not found')
               done()
         it 'should redirect to / if email is found', (done) ->
-          request(new App()).post('/forgot/password')
+          request(new App()).post('/request/reset/password')
             .send(email: fixturesData.testUser.User.fakeUser.email)
             .expect(302)
             .end (err, res) ->

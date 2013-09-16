@@ -90,23 +90,23 @@ module.exports = (app) ->
   app.get '/signupValidation', (req, res) ->
     res.render 'user/signupValidation'
 
-  app.get '/forgot/password', (req, res, next) ->
+  app.get '/request/reset/password', (req, res, next) ->
     if req.isAuthenticated()
       return res.redirect '/profile'
-    res.render 'user/forgotPassword',
+    res.render 'user/requestForResetingPassword',
       successMessage: req.flash('success')[0]
 
-  app.post '/forgot/password', (req, res, next) ->
+  app.post '/request/reset/password', (req, res, next) ->
     if req.isAuthenticated()
       return res.redirect '/profile'
     User.findOne email: req.body.email, (err, user) ->
       return next(err) if err
       if !user
-        return res.render 'user/forgotPassword', email: req.body.email, warningMessage: 'Email was not found'
+        return res.render 'user/requestForResetingPassword', email: req.body.email, warningMessage: 'Email was not found'
       user.requestResetPassword (err, user) ->
         return next(err) if err
         url = 'http://' + req.host + '/reset/password?key=' + user.regeneratePasswordKey
-        mailer.sendForgotPassword req.locale, user.email, url, (err, response) ->
+        mailer.sendRequestForResetingPassword req.locale, user.email, url, (err, response) ->
           return next(err) if err
           req.flash 'success', 'We\'ve sent to you a email. Check your mail box.'
           res.redirect '/'
@@ -142,8 +142,9 @@ module.exports = (app) ->
       if req.body.password
         user.updatePassword req.body.password, (err) ->
           return next(err) if err
-          url = 'http://' + req.host + '/forgot/password'
-          mailer.sendPasswordReseted req.locale, user.email, url, (err, response) ->
+          # url for recovering in case user did not perform this action
+          recoveringUrl = 'http://' + req.host + '/request/reset/password'
+          mailer.sendPasswordReseted req.locale, user.email, recoveringUrl, (err, response) ->
             return next(err) if err
             req.flash 'success', 'Your password has been updated. Please login again.'
             res.redirect '/login'
