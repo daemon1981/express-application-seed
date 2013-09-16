@@ -30,7 +30,7 @@ App = (connectedUser) ->
     '/signupConfirmation',
     '/signup/validation',
     '/signupValidation',
-    '/forgot/password',
+    '/request/reset/password',
     '/reset/password',
     '/auth/facebook',
     '/auth/facebook/callback',

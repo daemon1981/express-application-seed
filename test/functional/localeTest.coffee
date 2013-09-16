@@ -13,12 +13,12 @@ User = require '../../model/user'
 
 requestTest = request(new App());
 
-describe '** locale **', ->
-  describe 'by default inspect Accept-Language in http header', ->
+describe 'Locale', ->
+  describe 'By default inspect Accept-Language in http header', ->
     beforeEach (done) ->
       fixtures.load {User: []}, mongoose.connection, done
 
-    describe 'when signing up (using req.locale)', ->
+    describe 'Study case when using req.locale (signing up)', ->
       email = 'new@email.com'
       it 'with Accept-Language fr-FR should register language "fr" to user', (done) ->
         requestTest.post('/signup')
@@ -61,7 +61,7 @@ describe '** locale **', ->
               user.language.should.equal = 'en'
               done()
 
-  describe 'next priority goes to req.user.language', ->
+  describe 'Next priority goes to req.user.language', ->
     requestConnected = {}
     before (done) ->
       async.series [(callback) ->
@@ -73,7 +73,7 @@ describe '** locale **', ->
           callback()
       ], done
 
-    describe 'when going to homepage with user connected (language = "fr")', ->
+    describe 'Study case when going to homepage with user connected (language = "fr")', ->
       it 'with Accept-Language en-US should display in french', (done) ->
         requestConnected.get('/')
           .set('Accept-Language', 'en;q=0.6,en;q=0.4')
@@ -83,7 +83,7 @@ describe '** locale **', ->
             assert.equal 'Profil', $body.find('a[href="/profile"]:eq(0)').text()
             done()
 
-  describe 'next priority goes to query ?lang=', ->
+  describe 'Next priority goes to query ?lang=', ->
     requestConnected = {}
     before (done) ->
       async.series [(callback) ->
@@ -94,7 +94,7 @@ describe '** locale **', ->
           callback()
       ], done
 
-    describe 'when ?lang=fr', ->
+    describe 'Study case when ?lang=fr', ->
       it 'with Accept-Language en-US and connected user language "en" should display in french', (done) ->
         requestConnected.get('/?lang=fr')
           .set('Accept-Language', 'en;q=0.6,en;q=0.4')

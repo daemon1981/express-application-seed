@@ -13,7 +13,7 @@ include ../commons/form/mixins
 
 block content
     form.form-horizontal(method="POST", action="/profile", role="form")
-        a.btn.btn-warning.pull-right(href="/forgot/password") #{__i('profile-form-label-changePassword')}
+        a.btn.btn-warning.pull-right(href="/request/reset/password") #{__i('profile-form-label-changePassword')}
         .form-group
             label.control-label.col-lg-2 Picture
             .col-lg-6

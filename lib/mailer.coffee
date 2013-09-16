@@ -45,10 +45,10 @@ module.exports = ->
           html: html
         , callback
 
-  @sendForgotPassword = (locale, email, url, callback) ->
+  @sendRequestForResetingPassword = (locale, email, url, callback) ->
     emailTemplates self.getTemplatesDir(locale), (err, template) ->
       return callback(err) if err
-      template "forgotPassword", url: url, (err, html, text) ->
+      template "requestForResetingPassword", url: url, (err, html, text) ->
         return callback(err) if err
         self.sendMail
           from: config.mailer.sender['no-reply']
