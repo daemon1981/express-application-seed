@@ -10,10 +10,10 @@ fixturesData = require '../../fixtures/test.coffee'
 
 User = require '../../model/user'
 
-describe '** /login **', ->
+describe 'Login', ->
   requestTest = {}
 
-  describe '** Logged in **', ->
+  describe 'When logged in', ->
     before (done) ->
       async.series [(callback) ->
         fixtures.load fixturesData.testUser, mongoose.connection, callback
@@ -23,24 +23,24 @@ describe '** /login **', ->
           callback()
       ], done
 
-    describe 'GET', ->
+    describe 'Accessing login page', ->
       it 'should redirect to /profile', (done) ->
         requestTest.get('/login').expect(302).end (err, res) ->
           should.not.exist err
           res.header.location.should.equal('/profile')
           done()
 
-  describe '** Logged out **', ->
+  describe 'When logged out', ->
     before (done) ->
       fixtures.load fixturesData.testUser, mongoose.connection, done
 
-    describe 'GET', ->
+    describe 'Accessing login page', ->
       it 'should return 200', (done) ->
         request(new App()).get('/login').expect(200).end (err, res) ->
           should.not.exist err
           done()
 
-    describe 'POST', ->
+    describe 'Submitting login and password', ->
       describe 'User is validated', ->
         userData = fixturesData.testUser.User.fakeUser;
         it 'should redirect to /profile when authentication is successfull', (done) ->

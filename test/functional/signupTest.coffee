@@ -11,7 +11,7 @@ fixturesData = require '../../fixtures/test.coffee'
 
 User = require '../../model/user'
 
-describe '** signing up **', ->
+describe 'Signup', ->
   connectedRequest = {}
   before (done) ->
     async.series [(callback) ->
@@ -22,23 +22,23 @@ describe '** signing up **', ->
         callback()
     ], done
 
-  describe '** /signup **', ->
+  describe 'Signup page', ->
 
-    describe '** Logged in **', ->
-      describe 'GET', ->
+    describe 'When logged in', ->
+      describe 'Accessing signup page', ->
         it 'should redirect to /profile', (done) ->
           connectedRequest.get('/signup').expect(302).end (err, res) ->
             should.not.exist err
             res.header.location.should.equal('/profile')
             done()
 
-    describe '** Logged out **', ->
+    describe 'When logged out', ->
 
-      describe 'GET', ->
+      describe 'Accessing signup page', ->
         it 'should return 200', (done) ->
           request(new App()).get('/signup').expect(200).end done
 
-      describe 'POST', ->
+      describe 'Submitting signup information', ->
         describe 'User not already registered', ->
           it 'should redirect to /signupConfirmation when signup is successfull', (done) ->
             request(new App()).post('/signup')
@@ -66,42 +66,30 @@ describe '** signing up **', ->
                 $body.find('.alert.alert-danger').text().should.equal('×Email already exists.')
                 done()
 
-  describe '** /signupConfirmation **', ->
+  describe 'Signup confirmation page', ->
 
-    describe '** Logged in **', ->
-      describe 'GET', ->
+    describe 'When logged in', ->
+      describe 'Accessing signup confirmation page', ->
         it 'should return 200', (done) ->
           connectedRequest.get('/signupConfirmation').expect(200).end done
 
-    describe '** Logged out **', ->
-      describe 'GET', ->
+    describe 'When logged out', ->
+      describe 'Accessing signup confirmation page', ->
         it 'should return 200', (done) ->
           request(new App()).get('/signupConfirmation').expect(200).end done
 
-  describe '** /signupValidation **', ->
+  describe 'Validate account', ->
 
-    describe '** Logged in **', ->
-      describe 'GET', ->
-        it 'should return 200', (done) ->
-          connectedRequest.get('/signupValidation').expect(200).end done
-
-    describe '** Logged out **', ->
-      describe 'GET', ->
-        it 'should return 200', (done) ->
-          request(new App()).get('/signupValidation').expect(200).end done
-
-  describe '** /signup/validation **', ->
-
-    describe '** Logged in **', ->
-      describe 'GET', ->
+    describe 'When logged in', ->
+      describe 'Trying validate account', ->
         it 'should return 200', (done) ->
           connectedRequest.get('/signup/validation').expect(302).end (err, res) ->
             should.not.exist(err)
             res.header['location'].should.include('/profile')
             done()
 
-    describe '** Logged out **', ->
-      describe 'GET', ->
+    describe 'When logged out', ->
+      describe 'Query to validate account', ->
         it 'should redirect to homepage if no user has this key', (done) ->
           url = '/signup/validation?key=not-existing-key'
           request(new App()).get(url).expect(302).end (err, res) ->
@@ -114,3 +102,15 @@ describe '** signing up **', ->
             should.not.exist(err)
             res.header['location'].should.include('/signupValidation')
             done()
+
+  describe 'Signup validation page', ->
+
+    describe 'When logged in', ->
+      describe 'Accessing signup validation page', ->
+        it 'should return 200', (done) ->
+          connectedRequest.get('/signupValidation').expect(200).end done
+
+    describe 'When logged out', ->
+      describe 'Accessing signup validation page', ->
+        it 'should return 200', (done) ->
+          request(new App()).get('/signupValidation').expect(200).end done

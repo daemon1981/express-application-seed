@@ -1,33 +1,33 @@
 # TOC
-   - [user](#user)
-     - [#signup()](#user-signup)
-     - [#accountValidator()](#user-accountvalidator)
-     - [#isValidUserPassword()](#user-isvaliduserpassword)
-       - [user not validated](#user-isvaliduserpassword-user-not-validated)
-         - [when password is correct](#user-isvaliduserpassword-user-not-validated-when-password-is-correct)
-       - [user validated](#user-isvaliduserpassword-user-validated)
-         - [when password is correct](#user-isvaliduserpassword-user-validated-when-password-is-correct)
-         - [when password is not correct](#user-isvaliduserpassword-user-validated-when-password-is-not-correct)
-     - [#requestResetPassword()](#user-requestresetpassword)
-     - [#findOrCreateFaceBookUser()](#user-findorcreatefacebookuser)
-       - [when not existing](#user-findorcreatefacebookuser-when-not-existing)
-       - [when existing](#user-findorcreatefacebookuser-when-existing)
-   - [mailer](#mailer)
-     - [#sendSignupConfirmation()](#mailer-sendsignupconfirmation)
-     - [#sendAccountValidatedConfirmation()](#mailer-sendaccountvalidatedconfirmation)
-     - [#sendForgotPassword()](#mailer-sendforgotpassword)
-     - [#sendPasswordReseted()](#mailer-sendpasswordreseted)
-     - [#sendContactConfirmation()](#mailer-sendcontactconfirmation)
-   - [image](#image)
-     - [#validate()](#image-validate)
-     - [#createUserDir()](#image-createuserdir)
-     - [#saveUserPicture()](#image-saveuserpicture)
+   - [User](#user)
+     - [When signing up 'signup()'](#user-when-signing-up-signup)
+     - [When validating an account 'accountValidator()'](#user-when-validating-an-account-accountvalidator)
+     - [When checking user password is valid 'isValidUserPassword()'](#user-when-checking-user-password-is-valid-isvaliduserpassword)
+       - [User not validated](#user-when-checking-user-password-is-valid-isvaliduserpassword-user-not-validated)
+         - [Password is correct](#user-when-checking-user-password-is-valid-isvaliduserpassword-user-not-validated-password-is-correct)
+       - [User validated](#user-when-checking-user-password-is-valid-isvaliduserpassword-user-validated)
+         - [Password is correct](#user-when-checking-user-password-is-valid-isvaliduserpassword-user-validated-password-is-correct)
+         - [Password is not correct](#user-when-checking-user-password-is-valid-isvaliduserpassword-user-validated-password-is-not-correct)
+     - [When requesting for password reset 'requestResetPassword()'](#user-when-requesting-for-password-reset-requestresetpassword)
+     - [When finding facebook user 'findOrCreateFaceBookUser()'](#user-when-finding-facebook-user-findorcreatefacebookuser)
+       - [When user doesn't exists](#user-when-finding-facebook-user-findorcreatefacebookuser-when-user-doesnt-exists)
+       - [When user exists](#user-when-finding-facebook-user-findorcreatefacebookuser-when-user-exists)
+   - [Mailer](#mailer)
+     - [When sending signup confirmation 'sendSignupConfirmation()'](#mailer-when-sending-signup-confirmation-sendsignupconfirmation)
+     - [When sending account validation confirmation 'sendAccountValidatedConfirmation()'](#mailer-when-sending-account-validation-confirmation-sendaccountvalidatedconfirmation)
+     - [When sending request for reseting password 'sendRequestForResetingPassword()'](#mailer-when-sending-request-for-reseting-password-sendrequestforresetingpassword)
+     - [When sending password reset process 'sendPasswordReseted()'](#mailer-when-sending-password-reset-process-sendpasswordreseted)
+     - [When sending contact confirmation 'sendContactConfirmation()'](#mailer-when-sending-contact-confirmation-sendcontactconfirmation)
+   - [Image](#image)
+     - [When validating image 'validate()'](#image-when-validating-image-validate)
+     - [When creating user directory 'createUserDir()'](#image-when-creating-user-directory-createuserdir)
+     - [When saving user picture 'saveUserPicture()'](#image-when-saving-user-picture-saveuserpicture)
 <a name=""></a>
 
 <a name="user"></a>
-# user
-<a name="user-signup"></a>
-## #signup()
+# User
+<a name="user-when-signing-up-signup"></a>
+## When signing up 'signup()'
 should create a user and set validated to false.
 
 ```js
@@ -60,8 +60,8 @@ return User.signup(email, 'passwd', 'fr', function(err) {
 });
 ```
 
-<a name="user-accountvalidator"></a>
-## #accountValidator()
+<a name="user-when-validating-an-account-accountvalidator"></a>
+## When validating an account 'accountValidator()'
 should valid account.
 
 ```js
@@ -97,12 +97,12 @@ return User.accountValidator('key-not-exists', function(err, user) {
 });
 ```
 
-<a name="user-isvaliduserpassword"></a>
-## #isValidUserPassword()
-<a name="user-isvaliduserpassword-user-not-validated"></a>
-### user not validated
-<a name="user-isvaliduserpassword-user-not-validated-when-password-is-correct"></a>
-#### when password is correct
+<a name="user-when-checking-user-password-is-valid-isvaliduserpassword"></a>
+## When checking user password is valid 'isValidUserPassword()'
+<a name="user-when-checking-user-password-is-valid-isvaliduserpassword-user-not-validated"></a>
+### User not validated
+<a name="user-when-checking-user-password-is-valid-isvaliduserpassword-user-not-validated-password-is-correct"></a>
+#### Password is correct
 should not valid user password.
 
 ```js
@@ -117,10 +117,10 @@ return User.isValidUserPassword(email, passwd, function(err, data, msg) {
 });
 ```
 
-<a name="user-isvaliduserpassword-user-validated"></a>
-### user validated
-<a name="user-isvaliduserpassword-user-validated-when-password-is-correct"></a>
-#### when password is correct
+<a name="user-when-checking-user-password-is-valid-isvaliduserpassword-user-validated"></a>
+### User validated
+<a name="user-when-checking-user-password-is-valid-isvaliduserpassword-user-validated-password-is-correct"></a>
+#### Password is correct
 should valid user password.
 
 ```js
@@ -132,8 +132,8 @@ return User.isValidUserPassword(email, passwd, function(err, data, msg) {
 });
 ```
 
-<a name="user-isvaliduserpassword-user-validated-when-password-is-not-correct"></a>
-#### when password is not correct
+<a name="user-when-checking-user-password-is-valid-isvaliduserpassword-user-validated-password-is-not-correct"></a>
+#### Password is not correct
 should not valid user password.
 
 ```js
@@ -148,8 +148,8 @@ return User.isValidUserPassword(email, 'badpasswd', function(err, data, msg) {
 });
 ```
 
-<a name="user-requestresetpassword"></a>
-## #requestResetPassword()
+<a name="user-when-requesting-for-password-reset-requestresetpassword"></a>
+## When requesting for password reset 'requestResetPassword()'
 should set required fields for forgot password process.
 
 ```js
@@ -161,10 +161,10 @@ return user.requestResetPassword(function(err, modifedUser) {
 });
 ```
 
-<a name="user-findorcreatefacebookuser"></a>
-## #findOrCreateFaceBookUser()
-<a name="user-findorcreatefacebookuser-when-not-existing"></a>
-### when not existing
+<a name="user-when-finding-facebook-user-findorcreatefacebookuser"></a>
+## When finding facebook user 'findOrCreateFaceBookUser()'
+<a name="user-when-finding-facebook-user-findorcreatefacebookuser-when-user-doesnt-exists"></a>
+### When user doesn't exists
 should create facebook user.
 
 ```js
@@ -179,8 +179,8 @@ return User.findOrCreateFaceBookUser(profile, function(err, user) {
 });
 ```
 
-<a name="user-findorcreatefacebookuser-when-existing"></a>
-### when existing
+<a name="user-when-finding-facebook-user-findorcreatefacebookuser-when-user-exists"></a>
+### When user exists
 should retrieve facebook user.
 
 ```js
@@ -201,9 +201,9 @@ return User.findOrCreateFaceBookUser(profile, function(err, user) {
 ```
 
 <a name="mailer"></a>
-# mailer
-<a name="mailer-sendsignupconfirmation"></a>
-## #sendSignupConfirmation()
+# Mailer
+<a name="mailer-when-sending-signup-confirmation-sendsignupconfirmation"></a>
+## When sending signup confirmation 'sendSignupConfirmation()'
 should call sendMail.
 
 ```js
@@ -214,8 +214,8 @@ return mailer.sendSignupConfirmation('en', 'toto@toto.com', 'http://dummy-url.co
 });
 ```
 
-<a name="mailer-sendaccountvalidatedconfirmation"></a>
-## #sendAccountValidatedConfirmation()
+<a name="mailer-when-sending-account-validation-confirmation-sendaccountvalidatedconfirmation"></a>
+## When sending account validation confirmation 'sendAccountValidatedConfirmation()'
 should call sendMail.
 
 ```js
@@ -226,20 +226,20 @@ return mailer.sendAccountValidatedConfirmation('en', 'toto@toto.com', function(e
 });
 ```
 
-<a name="mailer-sendforgotpassword"></a>
-## #sendForgotPassword()
+<a name="mailer-when-sending-request-for-reseting-password-sendrequestforresetingpassword"></a>
+## When sending request for reseting password 'sendRequestForResetingPassword()'
 should call sendMail.
 
 ```js
-return mailer.sendForgotPassword('en', 'toto@toto.com', 'http://dummy-url.com', function(err, response) {
+return mailer.sendRequestForResetingPassword('en', 'toto@toto.com', 'http://dummy-url.com', function(err, response) {
   should.not.exists(err);
   assert(mailer.sendMail.called);
   return done();
 });
 ```
 
-<a name="mailer-sendpasswordreseted"></a>
-## #sendPasswordReseted()
+<a name="mailer-when-sending-password-reset-process-sendpasswordreseted"></a>
+## When sending password reset process 'sendPasswordReseted()'
 should call sendMail.
 
 ```js
@@ -250,8 +250,8 @@ return mailer.sendPasswordReseted('en', 'toto@toto.com', 'http://dummy-url.com',
 });
 ```
 
-<a name="mailer-sendcontactconfirmation"></a>
-## #sendContactConfirmation()
+<a name="mailer-when-sending-contact-confirmation-sendcontactconfirmation"></a>
+## When sending contact confirmation 'sendContactConfirmation()'
 should call sendMail.
 
 ```js
@@ -263,9 +263,9 @@ return mailer.sendContactConfirmation('en', 'toto@toto.com', function(err, respo
 ```
 
 <a name="image"></a>
-# image
-<a name="image-validate"></a>
-## #validate()
+# Image
+<a name="image-when-validating-image-validate"></a>
+## When validating image 'validate()'
 should validate when file is correct.
 
 ```js
@@ -317,8 +317,8 @@ return image.validate({
 });
 ```
 
-<a name="image-createuserdir"></a>
-## #createUserDir()
+<a name="image-when-creating-user-directory-createuserdir"></a>
+## When creating user directory 'createUserDir()'
 should create user directories.
 
 ```js
@@ -331,8 +331,8 @@ return image.createUserDir(userTest, testDir, function(err) {
 });
 ```
 
-<a name="image-saveuserpicture"></a>
-## #saveUserPicture()
+<a name="image-when-saving-user-picture-saveuserpicture"></a>
+## When saving user picture 'saveUserPicture()'
 should save image in user directories.
 
 ```js
