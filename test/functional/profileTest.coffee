@@ -71,7 +71,7 @@ describe 'Profile', ->
             .end (err, res) ->
               should.not.exist(err)
               $body = $(res.text)
-              should.exist($body.find('.alert.alert-warning'))
+              $body.find('.alert.alert-warning').length.should.equal(1)
               should.exist($body.find('.alert.alert-warning').text())
               done()
         it 'should redirect to / if email is found', (done) ->
