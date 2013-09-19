@@ -31,6 +31,13 @@
        - [Submitting login and password](#login-when-logged-out-submitting-login-and-password)
          - [User is validated](#login-when-logged-out-submitting-login-and-password-user-is-validated)
          - [User is not validated](#login-when-logged-out-submitting-login-and-password-user-is-not-validated)
+   - [Locale](#locale)
+     - [By default inspect Accept-Language in http header](#locale-by-default-inspect-accept-language-in-http-header)
+       - [Study case when using req.locale (signing up)](#locale-by-default-inspect-accept-language-in-http-header-study-case-when-using-reqlocale-signing-up)
+     - [Next priority goes to req.user.language](#locale-next-priority-goes-to-requserlanguage)
+       - [Study case when going to homepage with user connected (language = "fr")](#locale-next-priority-goes-to-requserlanguage-study-case-when-going-to-homepage-with-user-connected-language--fr)
+     - [Next priority goes to query ?lang=](#locale-next-priority-goes-to-query-lang)
+       - [Study case when ?lang=fr](#locale-next-priority-goes-to-query-lang-study-case-when-langfr)
    - [Profile](#profile)
      - [Profile page](#profile-profile-page)
        - [When logged in](#profile-profile-page-when-logged-in)
@@ -52,13 +59,14 @@
        - [When logged out](#profile-reset-password-page-when-logged-out)
          - [Accessing reset password page](#profile-reset-password-page-when-logged-out-accessing-reset-password-page)
          - [Submitting new password](#profile-reset-password-page-when-logged-out-submitting-new-password)
-   - [Locale](#locale)
-     - [By default inspect Accept-Language in http header](#locale-by-default-inspect-accept-language-in-http-header)
-       - [Study case when using req.locale (signing up)](#locale-by-default-inspect-accept-language-in-http-header-study-case-when-using-reqlocale-signing-up)
-     - [Next priority goes to req.user.language](#locale-next-priority-goes-to-requserlanguage)
-       - [Study case when going to homepage with user connected (language = "fr")](#locale-next-priority-goes-to-requserlanguage-study-case-when-going-to-homepage-with-user-connected-language--fr)
-     - [Next priority goes to query ?lang=](#locale-next-priority-goes-to-query-lang)
-       - [Study case when ?lang=fr](#locale-next-priority-goes-to-query-lang-study-case-when-langfr)
+   - [Contact](#contact)
+     - [Contact page](#contact-contact-page)
+       - [When logged in](#contact-contact-page-when-logged-in)
+         - [Accessing page](#contact-contact-page-when-logged-in-accessing-page)
+         - [Submitting information](#contact-contact-page-when-logged-in-submitting-information)
+       - [When logged out](#contact-contact-page-when-logged-out)
+         - [Accessing page](#contact-contact-page-when-logged-out-accessing-page)
+         - [Submitting information](#contact-contact-page-when-logged-out-submitting-information)
 <a name=""></a>
 
 <a name="signup"></a>
@@ -299,6 +307,116 @@ return request(new App()).post('/login').send({
 });
 ```
 
+<a name="locale"></a>
+# Locale
+<a name="locale-by-default-inspect-accept-language-in-http-header"></a>
+## By default inspect Accept-Language in http header
+<a name="locale-by-default-inspect-accept-language-in-http-header-study-case-when-using-reqlocale-signing-up"></a>
+### Study case when using req.locale (signing up)
+with Accept-Language fr-FR should register language "fr" to user.
+
+```js
+return requestTest.post('/signup').set('Accept-Language', 'fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4').send({
+  email: email,
+  password: 'password'
+}).expect(302).end(function(err, res) {
+  should.not.exist(err);
+  return User.findOne({
+    email: email
+  }, function(err, user) {
+    should.exist(user);
+    user.language.should.equal = 'fr';
+    return done();
+  });
+});
+```
+
+with Accept-Language fr should register language "fr" to user.
+
+```js
+return requestTest.post('/signup').set('Accept-Language', 'fr;q=0.8,en-US;q=0.6,en;q=0.4').send({
+  email: email,
+  password: 'password'
+}).expect(302).end(function(err, res) {
+  should.not.exist(err);
+  return User.findOne({
+    email: email
+  }, function(err, user) {
+    should.exist(user);
+    user.language.should.equal = 'fr';
+    return done();
+  });
+});
+```
+
+with Accept-Language en-US should register language "en" to user.
+
+```js
+return requestTest.post('/signup').set('Accept-Language', 'en-US;q=0.6,en;q=0.4').send({
+  email: email,
+  password: 'password'
+}).expect(302).end(function(err, res) {
+  should.not.exist(err);
+  return User.findOne({
+    email: email
+  }, function(err, user) {
+    should.exist(user);
+    user.language.should.equal = 'en';
+    return done();
+  });
+});
+```
+
+with Accept-Language en should register language "en" to user.
+
+```js
+return requestTest.post('/signup').set('Accept-Language', 'en;q=0.6,en;q=0.4').send({
+  email: email,
+  password: 'password'
+}).expect(302).end(function(err, res) {
+  should.not.exist(err);
+  return User.findOne({
+    email: email
+  }, function(err, user) {
+    should.exist(user);
+    user.language.should.equal = 'en';
+    return done();
+  });
+});
+```
+
+<a name="locale-next-priority-goes-to-requserlanguage"></a>
+## Next priority goes to req.user.language
+<a name="locale-next-priority-goes-to-requserlanguage-study-case-when-going-to-homepage-with-user-connected-language--fr"></a>
+### Study case when going to homepage with user connected (language = "fr")
+with Accept-Language en-US should display in french.
+
+```js
+return requestConnected.get('/').set('Accept-Language', 'en;q=0.6,en;q=0.4').expect(200).end(function(err, res) {
+  var $body;
+  should.not.exist(err);
+  $body = $(res.text);
+  assert.equal('Profil', $body.find('a[href="/profile"]:eq(0)').text());
+  return done();
+});
+```
+
+<a name="locale-next-priority-goes-to-query-lang"></a>
+## Next priority goes to query ?lang=
+<a name="locale-next-priority-goes-to-query-lang-study-case-when-langfr"></a>
+### Study case when ?lang=fr
+with Accept-Language en-US and connected user language "en" should display in french.
+
+```js
+return requestConnected.get('/?lang=fr').set('Accept-Language', 'en;q=0.6,en;q=0.4').expect(200).end(function(err, res) {
+  var $body;
+  should.not.exist(err);
+  $body = $(res.text);
+  assert.equal('Profil', $body.find('a[href="/profile"]:eq(0)').text());
+  return done();
+});
+```
+
 <a name="profile"></a>
 # Profile
 <a name="profile-profile-page"></a>
@@ -375,7 +493,7 @@ return connectedRequest.post('/request/reset/password').send({
   var $body;
   should.not.exist(err);
   $body = $(res.text);
-  should.exist($body.find('.alert.alert-warning'));
+  $body.find('.alert.alert-warning').length.should.equal(1);
   should.exist($body.find('.alert.alert-warning').text());
   return done();
 });
@@ -596,112 +714,55 @@ return request(new App()).post('/reset/password').send({
 });
 ```
 
-<a name="locale"></a>
-# Locale
-<a name="locale-by-default-inspect-accept-language-in-http-header"></a>
-## By default inspect Accept-Language in http header
-<a name="locale-by-default-inspect-accept-language-in-http-header-study-case-when-using-reqlocale-signing-up"></a>
-### Study case when using req.locale (signing up)
-with Accept-Language fr-FR should register language "fr" to user.
+<a name="contact"></a>
+# Contact
+<a name="contact-contact-page"></a>
+## Contact page
+<a name="contact-contact-page-when-logged-in"></a>
+### When logged in
+<a name="contact-contact-page-when-logged-in-accessing-page"></a>
+#### Accessing page
+should return 200.
 
 ```js
-return requestTest.post('/signup').set('Accept-Language', 'fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4').send({
-  email: email,
-  password: 'password'
-}).expect(302).end(function(err, res) {
-  should.not.exist(err);
-  return User.findOne({
-    email: email
-  }, function(err, user) {
-    should.exist(user);
-    user.language.should.equal = 'fr';
-    return done();
-  });
-});
+return connectedRequest.get('/contact').expect(200).end(done);
 ```
 
-with Accept-Language fr should register language "fr" to user.
+should not display captcha.
 
 ```js
-return requestTest.post('/signup').set('Accept-Language', 'fr;q=0.8,en-US;q=0.6,en;q=0.4').send({
-  email: email,
-  password: 'password'
-}).expect(302).end(function(err, res) {
-  should.not.exist(err);
-  return User.findOne({
-    email: email
-  }, function(err, user) {
-    should.exist(user);
-    user.language.should.equal = 'fr';
-    return done();
-  });
-});
-```
-
-with Accept-Language en-US should register language "en" to user.
-
-```js
-return requestTest.post('/signup').set('Accept-Language', 'en-US;q=0.6,en;q=0.4').send({
-  email: email,
-  password: 'password'
-}).expect(302).end(function(err, res) {
-  should.not.exist(err);
-  return User.findOne({
-    email: email
-  }, function(err, user) {
-    should.exist(user);
-    user.language.should.equal = 'en';
-    return done();
-  });
-});
-```
-
-with Accept-Language en should register language "en" to user.
-
-```js
-return requestTest.post('/signup').set('Accept-Language', 'en;q=0.6,en;q=0.4').send({
-  email: email,
-  password: 'password'
-}).expect(302).end(function(err, res) {
-  should.not.exist(err);
-  return User.findOne({
-    email: email
-  }, function(err, user) {
-    should.exist(user);
-    user.language.should.equal = 'en';
-    return done();
-  });
-});
-```
-
-<a name="locale-next-priority-goes-to-requserlanguage"></a>
-## Next priority goes to req.user.language
-<a name="locale-next-priority-goes-to-requserlanguage-study-case-when-going-to-homepage-with-user-connected-language--fr"></a>
-### Study case when going to homepage with user connected (language = "fr")
-with Accept-Language en-US should display in french.
-
-```js
-return requestConnected.get('/').set('Accept-Language', 'en;q=0.6,en;q=0.4').expect(200).end(function(err, res) {
+return connectedRequest.get('/contact').expect(200).end(function(err, res) {
   var $body;
   should.not.exist(err);
   $body = $(res.text);
-  assert.equal('Profil', $body.find('a[href="/profile"]:eq(0)').text());
+  $body.find('[for="recaptcha_challenge_field"]').length.should.equal(0);
   return done();
 });
 ```
 
-<a name="locale-next-priority-goes-to-query-lang"></a>
-## Next priority goes to query ?lang=
-<a name="locale-next-priority-goes-to-query-lang-study-case-when-langfr"></a>
-### Study case when ?lang=fr
-with Accept-Language en-US and connected user language "en" should display in french.
+<a name="contact-contact-page-when-logged-in-submitting-information"></a>
+#### Submitting information
+<a name="contact-contact-page-when-logged-out"></a>
+### When logged out
+<a name="contact-contact-page-when-logged-out-accessing-page"></a>
+#### Accessing page
+should return 200.
 
 ```js
-return requestConnected.get('/?lang=fr').set('Accept-Language', 'en;q=0.6,en;q=0.4').expect(200).end(function(err, res) {
+return request(new App()).get('/contact').expect(200).end(done);
+```
+
+should display captcha.
+
+```js
+return request(new App()).get('/contact').expect(200).end(function(err, res) {
   var $body;
   should.not.exist(err);
   $body = $(res.text);
-  assert.equal('Profil', $body.find('a[href="/profile"]:eq(0)').text());
+  $body.find('[for="recaptcha_challenge_field"]').length.should.equal(1);
   return done();
 });
 ```
+
+<a name="contact-contact-page-when-logged-out-submitting-information"></a>
+#### Submitting information
