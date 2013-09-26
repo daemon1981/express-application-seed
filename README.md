@@ -1,4 +1,4 @@
-# Project plinth in node.js [![Build Status](https://secure.travis-ci.org/daemon1981/express-site-plinth-example.png)](https://travis-ci.org/daemon1981/express-site-plinth-example)
+# Express application seed [![Build Status](https://secure.travis-ci.org/daemon1981/express-application-seed.png)](https://travis-ci.org/daemon1981/express-application-seed)
 
 ## Introduction
 
