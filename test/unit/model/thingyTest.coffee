@@ -40,6 +40,7 @@ describe "Thingy", ->
           should.exists(updatedThingy)
           assert.equal(1, updatedThingy.comments.length)
           done()
+
   describe "When removing a comment", ->
     beforeEach (done) ->
       async.series [(callback) ->
@@ -64,9 +65,19 @@ describe "Thingy", ->
         should.exists(updatedThingy)
         assert.equal(1, updatedThingy.comments.length)
         done()
+
   describe "When adding a user like", ->
-    it "should add one user like if user doesn't already liked"
-    it "shouldn't add an other user like if user already liked"
+    it "should add one user like if user doesn't already liked", (done) ->
+      thingy.addLike commentorUser, (err, updatedThingy) ->
+        assert.equal(1, updatedThingy.likes.length)
+        done()
+
+    it "shouldn't add an other user like if user already liked", (done) ->
+      thingy.addLike commentorUser, (err, updatedThingy) ->
+        thingy.addLike commentorUser, (err, updatedThingy) ->
+          assert.equal(1, thingy.likes.length)
+          done()
+
   describe "When removing a user like", ->
     it "should not affect current likes list if user didn'nt already liked"
     it "should remove user like from likes list if user already liked"

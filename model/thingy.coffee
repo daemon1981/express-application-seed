@@ -39,7 +39,14 @@ ThingySchema.methods.removeComment = (user, commentId, callback) ->
     return comment.creator isnt user._id || comment._id isnt commentId
   this.save callback
 
-ThingySchema.methods.addLike = (user) ->
+ThingySchema.methods.addLike = (user, callback) ->
+  hasAlreadyLiked = this.likes.some (userId) ->
+    return userId is user._id
+
+  this.likes.push user if !hasAlreadyLiked
+
+  this.save callback
+
 ThingySchema.methods.removeLike = (user) ->
 ThingySchema.methods.addReplyToComment = (user, commentId, message) ->
 ThingySchema.methods.removeReplyToComment = (user, commentId) ->
