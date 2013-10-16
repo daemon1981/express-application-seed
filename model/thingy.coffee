@@ -34,13 +34,17 @@ ThingySchema.methods.addComment = (user, message, callback) ->
   this.comments.push(comment)
   this.save callback
 
-ThingySchema.methods.removeComment = (commentId, user) ->
+ThingySchema.methods.removeComment = (user, commentId, callback) ->
+  this.comments.filter (comment) ->
+    return comment.creator isnt user._i || comment._id isnt commentId
+  this.save callback
+
 ThingySchema.methods.addLike = (user) ->
 ThingySchema.methods.removeLike = (user) ->
-ThingySchema.methods.addReplyToComment = (commentId, user, message) ->
-ThingySchema.methods.removeReplyToComment = (commentId, user) ->
-ThingySchema.methods.addLikeToComment = (commentId, user) ->
-ThingySchema.methods.removeLikeToComment = (commentId, user) ->
+ThingySchema.methods.addReplyToComment = (user, commentId, message) ->
+ThingySchema.methods.removeReplyToComment = (user, commentId) ->
+ThingySchema.methods.addLikeToComment = (user, commentId) ->
+ThingySchema.methods.removeLikeToComment = (user, commentId) ->
 ThingySchema.methods.getComments = ->
 
 Thingy = mongoose.model "Thingy", ThingySchema

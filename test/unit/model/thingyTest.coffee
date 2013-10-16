@@ -1,5 +1,6 @@
 require '../../../bootstrap.coffee'
 
+async    = require 'async'
 assert   = require 'assert'
 should   = require 'should'
 mongoose = require 'mongoose'
@@ -9,27 +10,52 @@ Thingy   = require "../../../model/thingy"
 User     = require '../../../model/user'
 
 describe "Thingy", ->
-  describe "When adding a comment", ->
-    thingy = {}
-    thingyCreatorUser = new User()
-    commentorUser = new User()
-    beforeEach (done) ->
-      thingyData = 
-        description: Array(201).join("d")
-        picture:     'dummy-picture.jpg'
-        creator:     thingyCreatorUser._id
-        owner:       thingyCreatorUser._id
+  thingy = {}
+  thingyCreatorUser = new User()
+  commentorUser = new User()
+
+  beforeEach (done) ->
+    thingyData =
+      description: Array(201).join("d")
+      picture:     'dummy-picture.jpg'
+      creator:     thingyCreatorUser._id
+      owner:       thingyCreatorUser._id
+    async.series [(callback) ->
+      Thingy.remove callback
+    , (callback) ->
       new Thingy(thingyData).save (err, thingySaved) ->
         thingy = thingySaved
-        done()
-    it.only "should fails if message length is out of min and max", (done) ->
+        callback()
+    ], done
+
+  describe "When adding a comment", ->
+    it "should fails if message length is out of min and max", (done) ->
       thingy.addComment commentorUser, '', (err) ->
         should.exists(err)
         done()
-    it "should append a new comment"
+    it "should append a new comment", (done) ->
+      thingy.addComment commentorUser, 'dummy message', (err) ->
+        should.not.exists(err)
+        Thingy.findById thingy._id, (err, updatedThingy) ->
+          should.exists(updatedThingy)
+          assert.equal(1, updatedThingy.comments.length)
+          done()
   describe "When removing a comment", ->
-    it "should fails if the user is not the creator"
-    it "should remove comment if the user is the creator"
+    beforeEach (done) ->
+      thingy.addComment commentorUser, 'dummy message', (err, updatedThingy) ->
+        should.not.exists(err)
+        thingy = updatedThingy
+        done()
+    it "should fails if the user is not the creator", (done) ->
+      thingy.removeComment 123, thingy.comments[0]._id, (err, updatedThingy) ->
+        should.exists(updatedThingy)
+        assert.equal(1, updatedThingy.comments.length)
+        done()
+    it "should remove comment if the user is the creator", (done) ->
+      thingy.removeComment commentorUser, thingy.comments[0]._id, (err, updatedThingy) ->
+        should.exists(updatedThingy)
+        assert.equal(1, updatedThingy.comments.length)
+        done()
   describe "When adding a user like", ->
     it "should add one user like if user doesn't already liked"
     it "shouldn't add an other user like if user already liked"
