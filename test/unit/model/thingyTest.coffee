@@ -42,14 +42,22 @@ describe "Thingy", ->
           done()
   describe "When removing a comment", ->
     beforeEach (done) ->
-      thingy.addComment commentorUser, 'dummy message', (err, updatedThingy) ->
-        should.not.exists(err)
-        thingy = updatedThingy
-        done()
+      async.series [(callback) ->
+        thingy.addComment commentorUser, 'first dummy message', (err, updatedThingy) ->
+          should.not.exists(err)
+          thingy = updatedThingy
+          callback()
+      , (callback) ->
+        thingy.addComment commentorUser, 'second dummy message', (err, updatedThingy) ->
+          should.not.exists(err)
+          thingy = updatedThingy
+          callback()
+      ], done
+
     it "should fails if the user is not the creator", (done) ->
       thingy.removeComment 123, thingy.comments[0]._id, (err, updatedThingy) ->
         should.exists(updatedThingy)
-        assert.equal(1, updatedThingy.comments.length)
+        assert.equal(2, updatedThingy.comments.length)
         done()
     it "should remove comment if the user is the creator", (done) ->
       thingy.removeComment commentorUser, thingy.comments[0]._id, (err, updatedThingy) ->

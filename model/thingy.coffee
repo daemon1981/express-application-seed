@@ -35,8 +35,8 @@ ThingySchema.methods.addComment = (user, message, callback) ->
   this.save callback
 
 ThingySchema.methods.removeComment = (user, commentId, callback) ->
-  this.comments.filter (comment) ->
-    return comment.creator isnt user._i || comment._id isnt commentId
+  this.comments = this.comments.filter (comment) ->
+    return comment.creator isnt user._id || comment._id isnt commentId
   this.save callback
 
 ThingySchema.methods.addLike = (user) ->
