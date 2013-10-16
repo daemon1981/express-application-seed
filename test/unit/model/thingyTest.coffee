@@ -9,10 +9,12 @@ fixtures = require 'pow-mongoose-fixtures'
 Thingy   = require "../../../model/thingy"
 User     = require '../../../model/user'
 
+ObjectId  = require('mongoose').Types.ObjectId;
+
 describe "Thingy", ->
   thingy = {}
   thingyCreatorUser = new User()
-  commentorUser = new User()
+  commentorUserId = new ObjectId()
 
   beforeEach (done) ->
     thingyData =
@@ -30,11 +32,11 @@ describe "Thingy", ->
 
   describe "When adding a comment", ->
     it "should fails if message length is out of min and max", (done) ->
-      thingy.addComment commentorUser, '', (err) ->
+      thingy.addComment commentorUserId, '', (err) ->
         should.exists(err)
         done()
     it "should append a new comment", (done) ->
-      thingy.addComment commentorUser, 'dummy message', (err) ->
+      thingy.addComment commentorUserId, 'dummy message', (err) ->
         should.not.exists(err)
         Thingy.findById thingy._id, (err, updatedThingy) ->
           should.exists(updatedThingy)
@@ -44,12 +46,12 @@ describe "Thingy", ->
   describe "When removing a comment", ->
     beforeEach (done) ->
       async.series [(callback) ->
-        thingy.addComment commentorUser, 'first dummy message', (err, updatedThingy) ->
+        thingy.addComment commentorUserId, 'first dummy message', (err, updatedThingy) ->
           should.not.exists(err)
           thingy = updatedThingy
           callback()
       , (callback) ->
-        thingy.addComment commentorUser, 'second dummy message', (err, updatedThingy) ->
+        thingy.addComment commentorUserId, 'second dummy message', (err, updatedThingy) ->
           should.not.exists(err)
           thingy = updatedThingy
           callback()
@@ -61,26 +63,48 @@ describe "Thingy", ->
         assert.equal(2, updatedThingy.comments.length)
         done()
     it "should remove comment if the user is the creator", (done) ->
-      thingy.removeComment commentorUser, thingy.comments[0]._id, (err, updatedThingy) ->
+      thingy.removeComment commentorUserId, thingy.comments[0]._id, (err, updatedThingy) ->
         should.exists(updatedThingy)
         assert.equal(1, updatedThingy.comments.length)
         done()
 
   describe "When adding a user like", ->
     it "should add one user like if user doesn't already liked", (done) ->
-      thingy.addLike commentorUser, (err, updatedThingy) ->
+      thingy.addLike commentorUserId, (err, updatedThingy) ->
         assert.equal(1, updatedThingy.likes.length)
         done()
 
     it "shouldn't add an other user like if user already liked", (done) ->
-      thingy.addLike commentorUser, (err, updatedThingy) ->
-        thingy.addLike commentorUser, (err, updatedThingy) ->
+      thingy.addLike commentorUserId, (err, updatedThingy) ->
+        thingy.addLike commentorUserId, (err, updatedThingy) ->
           assert.equal(1, thingy.likes.length)
           done()
 
   describe "When removing a user like", ->
-    it "should not affect current likes list if user didn'nt already liked"
-    it "should remove user like from likes list if user already liked"
+    userOneId = new ObjectId()
+    userTwoId = new ObjectId()
+
+    beforeEach (done) ->
+      async.series [(callback) ->
+        thingy.addLike commentorUserId, (err, updatedThingy) ->
+          thingy = updatedThingy
+          callback()
+      , (callback) ->
+        thingy.addLike userOneId, (err, updatedThingy) ->
+          thingy = updatedThingy
+          callback()
+      ], done
+
+    it "should not affect current likes list if user didn'nt already liked", (done) ->
+      thingy.removeLike userTwoId, (err, updatedThingy) ->
+        assert.equal(2, updatedThingy.likes.length)
+        done()
+
+    it "should remove user like from likes list if user already liked", (done) ->
+      thingy.removeLike commentorUserId, (err, updatedThingy) ->
+        assert.equal(1, updatedThingy.likes.length)
+        done()
+
   describe "When adding a reply to a comment", ->
     it "should fails if message length is out of min and max"
     it "should fails if comment doesn't exist"

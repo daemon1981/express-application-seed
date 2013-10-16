@@ -27,31 +27,36 @@ ThingySchema = new Schema(
   comments:      [CommentSchema]
 )
 
-ThingySchema.methods.addComment = (user, message, callback) ->
+ThingySchema.methods.addComment = (userId, message, callback) ->
   comment =
     message:       message
-    creator:       user
+    creator:       userId
   this.comments.push(comment)
   this.save callback
 
-ThingySchema.methods.removeComment = (user, commentId, callback) ->
+ThingySchema.methods.removeComment = (userId, commentId, callback) ->
   this.comments = this.comments.filter (comment) ->
-    return comment.creator isnt user._id || comment._id isnt commentId
+    return comment.creator isnt userId || comment._id isnt commentId
   this.save callback
 
-ThingySchema.methods.addLike = (user, callback) ->
-  hasAlreadyLiked = this.likes.some (userId) ->
-    return userId is user._id
+ThingySchema.methods.addLike = (userId, callback) ->
+  hasAlreadyLiked = this.likes.some (likeUserId) ->
+    return likeUserId is userId
 
-  this.likes.push user if !hasAlreadyLiked
+  this.likes.push userId if !hasAlreadyLiked
 
   this.save callback
 
-ThingySchema.methods.removeLike = (user) ->
-ThingySchema.methods.addReplyToComment = (user, commentId, message) ->
-ThingySchema.methods.removeReplyToComment = (user, commentId) ->
-ThingySchema.methods.addLikeToComment = (user, commentId) ->
-ThingySchema.methods.removeLikeToComment = (user, commentId) ->
+ThingySchema.methods.removeLike = (userId, callback) ->
+  this.likes = this.likes.filter (likeUserId) ->
+    return likeUserId isnt userId
+
+  this.save callback
+
+ThingySchema.methods.addReplyToComment = (userId, commentId, message) ->
+ThingySchema.methods.removeReplyToComment = (userId, commentId) ->
+ThingySchema.methods.addLikeToComment = (userId, commentId, callback) ->
+ThingySchema.methods.removeLikeToComment = (userId, commentId, callback) ->
 ThingySchema.methods.getComments = ->
 
 Thingy = mongoose.model "Thingy", ThingySchema
