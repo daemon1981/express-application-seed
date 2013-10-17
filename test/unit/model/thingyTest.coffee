@@ -16,6 +16,20 @@ describe "Thingy", ->
   thingyCreatorUser = new User()
   commentorUserId = new ObjectId()
 
+  beforeEach (done) ->
+    thingyData =
+      description: Array(201).join("d")
+      picture:     'dummy-picture.jpg'
+      creator:     thingyCreatorUser._id
+      owner:       thingyCreatorUser._id
+    async.series [(callback) ->
+      Thingy.remove callback
+    , (callback) ->
+      new Thingy(thingyData).save (err, thingySaved) ->
+        thingy = thingySaved
+        callback()
+    ], done
+
   describe "When getting a comment", ->
     userOneId = new ObjectId()
     userTwoId = new ObjectId()
@@ -62,20 +76,6 @@ describe "Thingy", ->
       assert.equal(level2UserTwoMsg, thingy.getComment(commentIds['level 2 ' + userTwoId]).message)
     it "should be able to retrieve a third level comment", ->
       assert.equal(level3UserTwoMsg, thingy.getComment(commentIds['level 3 ' + userOneId]).message)
-
-  beforeEach (done) ->
-    thingyData =
-      description: Array(201).join("d")
-      picture:     'dummy-picture.jpg'
-      creator:     thingyCreatorUser._id
-      owner:       thingyCreatorUser._id
-    async.series [(callback) ->
-      Thingy.remove callback
-    , (callback) ->
-      new Thingy(thingyData).save (err, thingySaved) ->
-        thingy = thingySaved
-        callback()
-    ], done
 
   describe "When adding a comment", ->
     it "should fails if message length is out of min and max", (done) ->
@@ -257,7 +257,3 @@ describe "Thingy", ->
       thingy.removeLikeToComment commentorUserId, commentId, (err, updatedThingy) ->
         assert.equal 1, updatedThingy.getComment(commentId).likes.length
         done()
-  describe "When getting comments", ->
-    it "with a simple list of comments with no reply"
-    it "with a simple list of comments with one level of replies"
-    it "with a simple list of comments with three level of replies"

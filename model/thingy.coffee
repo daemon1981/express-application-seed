@@ -106,8 +106,6 @@ ThingySchema.methods.removeLikeToComment = (userId, commentId, callback) ->
 
   this.save callback
 
-ThingySchema.methods.getComments = ->
-
 Thingy = mongoose.model "Thingy", ThingySchema
 
 module.exports = Thingy
