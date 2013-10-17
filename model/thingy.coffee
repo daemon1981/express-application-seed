@@ -32,7 +32,10 @@ ThingySchema.methods.addComment = (userId, message, callback) ->
     message:       message
     creator:       userId
   this.comments.push(comment)
+
   this.save callback
+
+  return this.comments[this.comments.length - 1]._id
 
 ThingySchema.methods.removeComment = (userId, commentId, callback) ->
   this.comments = this.comments.filter (comment) ->
@@ -52,6 +55,17 @@ ThingySchema.methods.removeLike = (userId, callback) ->
     return likeUserId isnt userId
 
   this.save callback
+
+ThingySchema.methods.getComment = (commentId) ->
+  searchComment = (comments, commentId) ->
+    for comment in comments
+      if comment._id is commentId
+        return comment
+      comment = searchComment(comment.comments, commentId)
+      return comment if comment isnt null
+    null
+
+  return searchComment(this.comments, commentId)
 
 ThingySchema.methods.addReplyToComment = (userId, commentId, message) ->
 ThingySchema.methods.removeReplyToComment = (userId, commentId) ->

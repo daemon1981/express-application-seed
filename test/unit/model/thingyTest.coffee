@@ -35,9 +35,10 @@ describe "Thingy", ->
       thingy.addComment commentorUserId, '', (err) ->
         should.exists(err)
         done()
-    it "should append a new comment", (done) ->
-      thingy.addComment commentorUserId, 'dummy message', (err) ->
+    it "should append a new comment and return comment id", (done) ->
+      commentId = thingy.addComment commentorUserId, 'dummy message', (err) ->
         should.not.exists(err)
+        should.exists(commentId)
         Thingy.findById thingy._id, (err, updatedThingy) ->
           should.exists(updatedThingy)
           assert.equal(1, updatedThingy.comments.length)
@@ -105,9 +106,55 @@ describe "Thingy", ->
         assert.equal(1, updatedThingy.likes.length)
         done()
 
+  describe "When getting a comment", ->
+    userOneId = new ObjectId()
+    userTwoId = new ObjectId()
+    level1UserOneMsg = 'level1 message ' + userOneId
+    level1UserTwoMsg = 'level1 message ' + userTwoId
+    level2UserOneMsg = 'level2 message ' + userOneId
+    level2UserTwoMsg = 'level2 message ' + userTwoId
+    level3UserTwoMsg = 'level3 message ' + userOneId
+    messageIds = {}
+
+    beforeEach (done) ->
+      thingy.comments = [
+        message:       level1UserOneMsg
+        creator:       userOneId
+      ,
+        message:       level1UserTwoMsg
+        creator:       userTwoId
+        comments: [
+          message:       level2UserOneMsg
+          creator:       userOneId
+        ,
+          message:       level2UserTwoMsg
+          creator:       userTwoId
+          comments: [
+            message:       level3UserTwoMsg
+            creator:       userOneId
+          ]
+        ]
+      ]
+      messageIds['level 1 ' + userOneId] = thingy.comments[0]._id;
+      messageIds['level 1 ' + userTwoId] = thingy.comments[1]._id;
+      messageIds['level 2 ' + userOneId] = thingy.comments[1].comments[0]._id;
+      messageIds['level 2 ' + userTwoId] = thingy.comments[1].comments[1]._id;
+      messageIds['level 3 ' + userOneId] = thingy.comments[1].comments[1].comments[0]._id;
+      thingy.save done
+
+    it "should retrieve null if comment doesn't exist", ->
+      assert.equal(null, thingy.getComment(messageIds['n0t3x1t1n9']))
+    it "should be able to retrieve a simple level comment", ->
+      assert.equal(level1UserOneMsg, thingy.getComment(messageIds['level 1 ' + userOneId]).message)
+      assert.equal(level1UserTwoMsg, thingy.getComment(messageIds['level 1 ' + userTwoId]).message)
+    it "should be able to retrieve a second level comment", ->
+      assert.equal(level2UserOneMsg, thingy.getComment(messageIds['level 2 ' + userOneId]).message)
+      assert.equal(level2UserTwoMsg, thingy.getComment(messageIds['level 2 ' + userTwoId]).message)
+    it "should be able to retrieve a third level comment", ->
+      assert.equal(level3UserTwoMsg, thingy.getComment(messageIds['level 3 ' + userOneId]).message)
   describe "When adding a reply to a comment", ->
-    it "should fails if message length is out of min and max"
     it "should fails if comment doesn't exist"
+    it "should fails if message length is out of min and max"
     it "should append a new comment to the parent comment if parent comment exists"
   describe "When removing a reply from a comment", ->
     it "should fails if the user is not the creator"
