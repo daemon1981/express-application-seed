@@ -87,6 +87,16 @@ ThingySchema.methods.addReplyToComment = (userId, commentId, message, callback) 
   this.save callback
 
 ThingySchema.methods.addLikeToComment = (userId, commentId, callback) ->
+  comment = this.getComment(commentId)
+  return callback(new Error('Comment doesn\'t exist')) if !comment
+
+  hasAlreadyLiked = comment.likes.some (likeUserId) ->
+    return likeUserId is userId
+
+  comment.likes.push userId  if !hasAlreadyLiked
+
+  this.save callback
+
 ThingySchema.methods.removeLikeToComment = (userId, commentId, callback) ->
 ThingySchema.methods.getComments = ->
 
