@@ -67,8 +67,18 @@ ThingySchema.methods.getComment = (commentId) ->
 
   return searchComment(this.comments, commentId)
 
-ThingySchema.methods.addReplyToComment = (userId, commentId, message) ->
-ThingySchema.methods.removeReplyToComment = (userId, commentId) ->
+ThingySchema.methods.addReplyToComment = (userId, commentId, message, callback) ->
+  comment = this.getComment(commentId)
+  return callback(new Error('Comment doesn\'t exist')) if !comment
+
+  reply =
+    message:       message
+    creator:       userId
+  comment.comments.push(reply)
+
+  this.save callback
+
+ThingySchema.methods.removeReplyToComment = (userId, commentId, callback) ->
 ThingySchema.methods.addLikeToComment = (userId, commentId, callback) ->
 ThingySchema.methods.removeLikeToComment = (userId, commentId, callback) ->
 ThingySchema.methods.getComments = ->

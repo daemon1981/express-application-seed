@@ -152,10 +152,37 @@ describe "Thingy", ->
       assert.equal(level2UserTwoMsg, thingy.getComment(messageIds['level 2 ' + userTwoId]).message)
     it "should be able to retrieve a third level comment", ->
       assert.equal(level3UserTwoMsg, thingy.getComment(messageIds['level 3 ' + userOneId]).message)
+
   describe "When adding a reply to a comment", ->
-    it "should fails if comment doesn't exist"
-    it "should fails if message length is out of min and max"
-    it "should append a new comment to the parent comment if parent comment exists"
+    userOneId = new ObjectId()
+    userTwoId = new ObjectId()
+    level1UserOneMsg = 'level1 message ' + userOneId
+    level1UserOneMsgRef = 'level 1 ' + userOneId
+    messageIds = {}
+
+    beforeEach (done) ->
+      thingy.comments = [
+        message:       level1UserOneMsg
+        creator:       userOneId
+      ]
+      messageIds[level1UserOneMsgRef] = thingy.comments[0]._id;
+      thingy.save done
+
+    it "should fails if comment doesn't exist", (done) ->
+      thingy.addReplyToComment commentorUserId, 'n0t3x1t1n9', 'dummy message', (err, updatedThingy) ->
+        should.exists(err)
+        done()
+    it "should fails if message length is out of min and max", (done) ->
+      messageId = messageIds[level1UserOneMsgRef]
+      thingy.addReplyToComment commentorUserId, messageId, '', (err, updatedThingy) ->
+        should.exists(err)
+        done()
+    it "should append a new comment to the parent comment if parent comment exists", (done) ->
+      messageId = messageIds[level1UserOneMsgRef]
+      thingy.addReplyToComment commentorUserId, messageId, 'dummy message', (err, updatedThingy) ->
+        assert.equal 1, updatedThingy.getComment(messageId).comments.length
+        done()
+
   describe "When removing a reply from a comment", ->
     it "should fails if the user is not the creator"
     it "should fails if parent comment doesn't exist"
