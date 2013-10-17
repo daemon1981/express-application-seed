@@ -98,6 +98,14 @@ ThingySchema.methods.addLikeToComment = (userId, commentId, callback) ->
   this.save callback
 
 ThingySchema.methods.removeLikeToComment = (userId, commentId, callback) ->
+  comment = this.getComment(commentId)
+  return callback(new Error('Comment doesn\'t exist')) if !comment
+
+  comment.likes = comment.likes.filter (likeUserId) ->
+    return likeUserId isnt userId
+
+  this.save callback
+
 ThingySchema.methods.getComments = ->
 
 Thingy = mongoose.model "Thingy", ThingySchema

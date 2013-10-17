@@ -231,10 +231,32 @@ describe "Thingy", ->
         thingy.addLikeToComment commentorUserId, commentId, (err, updatedThingy) ->
           assert.equal 1, updatedThingy.getComment(commentId).likes.length
           done()
+
   describe "When removing a user like from a comment", ->
-    it "should fails if comment doesn't exist"
-    it "should not affect current likes list if user didn'nt already liked"
-    it "should remove user like from likes list if user already liked"
+    level1Msg = 'level1 message'
+    commentId = ''
+
+    beforeEach (done) ->
+      thingy.comments = [
+        message:   'level1 message'
+        creator:   commentorUserId
+        likes:     [commentorUserId, new ObjectId()]
+      ]
+      commentId = thingy.comments[0]._id
+      thingy.save done
+
+    it "should fails if comment doesn't exist", (done) ->
+      thingy.removeLikeToComment commentorUserId, 'n0t3x1t1n9', (err, updatedThingy) ->
+        should.exists(err)
+        done()
+    it "should not affect current likes list if user didn'nt already liked", (done) ->
+      thingy.removeLikeToComment new ObjectId(), commentId, (err, updatedThingy) ->
+        assert.equal 2, updatedThingy.getComment(commentId).likes.length
+        done()
+    it "should remove user like from likes list if user already liked", (done) ->
+      thingy.removeLikeToComment commentorUserId, commentId, (err, updatedThingy) ->
+        assert.equal 1, updatedThingy.getComment(commentId).likes.length
+        done()
   describe "When getting comments", ->
     it "with a simple list of comments with no reply"
     it "with a simple list of comments with one level of replies"
