@@ -16,6 +16,53 @@ describe "Thingy", ->
   thingyCreatorUser = new User()
   commentorUserId = new ObjectId()
 
+  describe "When getting a comment", ->
+    userOneId = new ObjectId()
+    userTwoId = new ObjectId()
+    level1UserOneMsg = 'level1 message ' + userOneId
+    level1UserTwoMsg = 'level1 message ' + userTwoId
+    level2UserOneMsg = 'level2 message ' + userOneId
+    level2UserTwoMsg = 'level2 message ' + userTwoId
+    level3UserTwoMsg = 'level3 message ' + userOneId
+    messageIds = {}
+
+    beforeEach (done) ->
+      thingy.comments = [
+        message:       level1UserOneMsg
+        creator:       userOneId
+      ,
+        message:       level1UserTwoMsg
+        creator:       userTwoId
+        comments: [
+          message:       level2UserOneMsg
+          creator:       userOneId
+        ,
+          message:       level2UserTwoMsg
+          creator:       userTwoId
+          comments: [
+            message:       level3UserTwoMsg
+            creator:       userOneId
+          ]
+        ]
+      ]
+      messageIds['level 1 ' + userOneId] = thingy.comments[0]._id
+      messageIds['level 1 ' + userTwoId] = thingy.comments[1]._id
+      messageIds['level 2 ' + userOneId] = thingy.comments[1].comments[0]._id
+      messageIds['level 2 ' + userTwoId] = thingy.comments[1].comments[1]._id
+      messageIds['level 3 ' + userOneId] = thingy.comments[1].comments[1].comments[0]._id
+      thingy.save done
+
+    it "should retrieve null if comment doesn't exist", ->
+      assert.equal(null, thingy.getComment('n0t3x1t1n9'))
+    it "should be able to retrieve a simple level comment", ->
+      assert.equal(level1UserOneMsg, thingy.getComment(messageIds['level 1 ' + userOneId]).message)
+      assert.equal(level1UserTwoMsg, thingy.getComment(messageIds['level 1 ' + userTwoId]).message)
+    it "should be able to retrieve a second level comment", ->
+      assert.equal(level2UserOneMsg, thingy.getComment(messageIds['level 2 ' + userOneId]).message)
+      assert.equal(level2UserTwoMsg, thingy.getComment(messageIds['level 2 ' + userTwoId]).message)
+    it "should be able to retrieve a third level comment", ->
+      assert.equal(level3UserTwoMsg, thingy.getComment(messageIds['level 3 ' + userOneId]).message)
+
   beforeEach (done) ->
     thingyData =
       description: Array(201).join("d")
@@ -45,29 +92,54 @@ describe "Thingy", ->
           done()
 
   describe "When removing a comment", ->
-    beforeEach (done) ->
-      async.series [(callback) ->
-        thingy.addComment commentorUserId, 'first dummy message', (err, updatedThingy) ->
-          should.not.exists(err)
-          thingy = updatedThingy
-          callback()
-      , (callback) ->
-        thingy.addComment commentorUserId, 'second dummy message', (err, updatedThingy) ->
-          should.not.exists(err)
-          thingy = updatedThingy
-          callback()
-      ], done
+    level1Msg = 'level1 message'
+    level2Msg = 'level2 message'
+    level3Msg = 'level3 message'
+    messageIds = {}
 
-    it "should fails if the user is not the creator", (done) ->
-      thingy.removeComment 123, thingy.comments[0]._id, (err, updatedThingy) ->
-        should.exists(updatedThingy)
-        assert.equal(2, updatedThingy.comments.length)
-        done()
-    it "should remove comment if the user is the creator", (done) ->
-      thingy.removeComment commentorUserId, thingy.comments[0]._id, (err, updatedThingy) ->
-        should.exists(updatedThingy)
-        assert.equal(1, updatedThingy.comments.length)
-        done()
+    beforeEach (done) ->
+      thingy.comments = [
+        message:       level1Msg
+        creator:       commentorUserId
+        comments: [
+          message:       level2Msg
+          creator:       commentorUserId
+          comments: [
+            message:       level3Msg
+            creator:       commentorUserId
+          ]
+        ],
+      ,
+        message:       'level1 second message'
+        creator:       commentorUserId
+      ]
+      messageIds['level 1'] = thingy.comments[0]._id
+      messageIds['level 2'] = thingy.comments[0].comments[0]._id
+      messageIds['level 3'] = thingy.comments[0].comments[0].comments[0]._id
+      thingy.save done
+
+    describe 'when user is the not creator', ->
+      it "should fails", (done) ->
+        thingy.removeComment 'n0t3x1t1n9', messageIds['level 1'], (err, updatedThingy) ->
+          should.exists(updatedThingy)
+          should.exists(updatedThingy.getComment(messageIds['level 1']))
+          done()
+    describe 'when user is the creator', ->
+      it "should remove comment of level1", (done) ->
+        thingy.removeComment commentorUserId, messageIds['level 1'], (err, updatedThingy) ->
+          should.exists(updatedThingy)
+          should.not.exists(updatedThingy.getComment(messageIds['level 1']))
+          done()
+      it.skip "should remove comment of level2", (done) ->
+        thingy.removeComment commentorUserId, messageIds['level 2'], (err, updatedThingy) ->
+          should.exists(updatedThingy)
+          should.not.exists(updatedThingy.getComment(messageIds['level 2']))
+          done()
+      it.skip "should remove comment of level3", (done) ->
+        thingy.removeComment commentorUserId, messageIds['level 3'], (err, updatedThingy) ->
+          should.exists(updatedThingy)
+          should.not.exists(updatedThingy.getComment(messageIds['level 3']))
+          done()
 
   describe "When adding a user like", ->
     it "should add one user like if user doesn't already liked", (done) ->
@@ -105,53 +177,6 @@ describe "Thingy", ->
       thingy.removeLike commentorUserId, (err, updatedThingy) ->
         assert.equal(1, updatedThingy.likes.length)
         done()
-
-  describe "When getting a comment", ->
-    userOneId = new ObjectId()
-    userTwoId = new ObjectId()
-    level1UserOneMsg = 'level1 message ' + userOneId
-    level1UserTwoMsg = 'level1 message ' + userTwoId
-    level2UserOneMsg = 'level2 message ' + userOneId
-    level2UserTwoMsg = 'level2 message ' + userTwoId
-    level3UserTwoMsg = 'level3 message ' + userOneId
-    messageIds = {}
-
-    beforeEach (done) ->
-      thingy.comments = [
-        message:       level1UserOneMsg
-        creator:       userOneId
-      ,
-        message:       level1UserTwoMsg
-        creator:       userTwoId
-        comments: [
-          message:       level2UserOneMsg
-          creator:       userOneId
-        ,
-          message:       level2UserTwoMsg
-          creator:       userTwoId
-          comments: [
-            message:       level3UserTwoMsg
-            creator:       userOneId
-          ]
-        ]
-      ]
-      messageIds['level 1 ' + userOneId] = thingy.comments[0]._id;
-      messageIds['level 1 ' + userTwoId] = thingy.comments[1]._id;
-      messageIds['level 2 ' + userOneId] = thingy.comments[1].comments[0]._id;
-      messageIds['level 2 ' + userTwoId] = thingy.comments[1].comments[1]._id;
-      messageIds['level 3 ' + userOneId] = thingy.comments[1].comments[1].comments[0]._id;
-      thingy.save done
-
-    it "should retrieve null if comment doesn't exist", ->
-      assert.equal(null, thingy.getComment(messageIds['n0t3x1t1n9']))
-    it "should be able to retrieve a simple level comment", ->
-      assert.equal(level1UserOneMsg, thingy.getComment(messageIds['level 1 ' + userOneId]).message)
-      assert.equal(level1UserTwoMsg, thingy.getComment(messageIds['level 1 ' + userTwoId]).message)
-    it "should be able to retrieve a second level comment", ->
-      assert.equal(level2UserOneMsg, thingy.getComment(messageIds['level 2 ' + userOneId]).message)
-      assert.equal(level2UserTwoMsg, thingy.getComment(messageIds['level 2 ' + userTwoId]).message)
-    it "should be able to retrieve a third level comment", ->
-      assert.equal(level3UserTwoMsg, thingy.getComment(messageIds['level 3 ' + userOneId]).message)
 
   describe "When adding a reply to a comment", ->
     userOneId = new ObjectId()
