@@ -3,7 +3,10 @@ mongoose = require 'mongoose'
 Schema   = mongoose.Schema
 ObjectId = Schema.Types.ObjectId
 
-module.exports = exports = rattlePlugin = (schema, options) ->
+rattleActivity = require '../rattleActivityObserver'
+
+module.exports = rattlePlugin = (schema, options) ->
+  throw new Error('You must specify the name of the rattle object') if !options or !options.name
 
   # Schema strategies for embedded comments
   #
@@ -24,10 +27,12 @@ module.exports = exports = rattlePlugin = (schema, options) ->
     comments:      [CommentSchema]
 
   schema.pre "save", (next) ->
-    # => trigger creation activity
+    rattleActivity.emit('update', this)
     next()
 
   schema.methods.addComment = (userId, message, callback) ->
+    self = this
+
     comment =
       message:       message
       creator:       userId
@@ -35,10 +40,26 @@ module.exports = exports = rattlePlugin = (schema, options) ->
 
     this.save (err, data) ->
       return callback(err) if err isnt null
-      # => trigger addComment activity
+      rattleActivity.emit('addComment', self, userId, comment)
       callback(err, data)
 
     return this.comments[this.comments.length - 1]._id
+
+  schema.methods.addReplyToComment = (userId, commentId, message, callback) ->
+    comment = this.getComment(commentId)
+    return callback(new Error('Comment doesn\'t exist')) if !comment
+
+    self = this
+
+    reply =
+      message:       message
+      creator:       userId
+    comment.comments.push(reply)
+
+    this.save (err, data) ->
+      return callback(err) if err isnt null
+      rattleActivity.emit('addReplyToComment', self, userId, commentId, reply)
+      callback(err, data)
 
   schema.methods.removeComment = (userId, commentId, callback) ->
     removeComment = (comments, commentId) ->
@@ -68,8 +89,34 @@ module.exports = exports = rattlePlugin = (schema, options) ->
       # => trigger addLike activity
       callback(err, data)
 
+  schema.methods.addLikeToComment = (userId, commentId, callback) ->
+    comment = this.getComment(commentId)
+    return callback(new Error('Comment doesn\'t exist')) if !comment
+
+    hasAlreadyLiked = comment.likes.some (likeUserId) ->
+      return likeUserId is userId
+
+    comment.likes.push userId  if !hasAlreadyLiked
+
+    this.save (err, data) ->
+      return callback(err) if err isnt null
+      # => trigger addLike activity
+      callback(err, data)
+
   schema.methods.removeLike = (userId, callback) ->
     this.likes = this.likes.filter (likeUserId) ->
+      return likeUserId isnt userId
+
+    this.save (err, data) ->
+      return callback(err) if err isnt null
+      # => trigger removeLike activity
+      callback(err, data)
+
+  schema.methods.removeLikeToComment = (userId, commentId, callback) ->
+    comment = this.getComment(commentId)
+    return callback(new Error('Comment doesn\'t exist')) if !comment
+
+    comment.likes = comment.likes.filter (likeUserId) ->
       return likeUserId isnt userId
 
     this.save (err, data) ->
@@ -87,43 +134,3 @@ module.exports = exports = rattlePlugin = (schema, options) ->
       null
 
     return searchComment(this.comments, commentId)
-
-  schema.methods.addReplyToComment = (userId, commentId, message, callback) ->
-    comment = this.getComment(commentId)
-    return callback(new Error('Comment doesn\'t exist')) if !comment
-
-    reply =
-      message:       message
-      creator:       userId
-    comment.comments.push(reply)
-
-    this.save (err, data) ->
-      return callback(err) if err isnt null
-      # => trigger addComment activity
-      callback(err, data)
-
-  schema.methods.addLikeToComment = (userId, commentId, callback) ->
-    comment = this.getComment(commentId)
-    return callback(new Error('Comment doesn\'t exist')) if !comment
-
-    hasAlreadyLiked = comment.likes.some (likeUserId) ->
-      return likeUserId is userId
-
-    comment.likes.push userId  if !hasAlreadyLiked
-
-    this.save (err, data) ->
-      return callback(err) if err isnt null
-      # => trigger addLike activity
-      callback(err, data)
-
-  schema.methods.removeLikeToComment = (userId, commentId, callback) ->
-    comment = this.getComment(commentId)
-    return callback(new Error('Comment doesn\'t exist')) if !comment
-
-    comment.likes = comment.likes.filter (likeUserId) ->
-      return likeUserId isnt userId
-
-    this.save (err, data) ->
-      return callback(err) if err isnt null
-      # => trigger removeLike activity
-      callback(err, data)

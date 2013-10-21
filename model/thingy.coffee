@@ -11,7 +11,7 @@ ThingySchema = new Schema(
   owner:         type: ObjectId, ref: 'User', required: true
 )
 
-ThingySchema.plugin RattlePlugin
+ThingySchema.plugin RattlePlugin, name: 'thingy'
 
 Thingy = mongoose.model "Thingy", ThingySchema
 
