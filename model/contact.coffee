@@ -1,6 +1,4 @@
 mongoose = require 'mongoose'
-moment   = require 'moment'
-pwd      = require 'pwd'
 
 Schema   = mongoose.Schema
 ObjectId = Schema.Types.ObjectId
