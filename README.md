@@ -10,7 +10,7 @@ Good coding practices:
   * Decoupling
   * Testing
 
-Functional Stategies:
+Functional Strategies:
   * Signing up
     - http://davidcel.is/blog/2012/09/06/stop-validating-email-addresses-with-regex/
   * Login
@@ -47,7 +47,13 @@ bower install
 
 compile client coffeescripts on save:
 ```
-coffee -wcb -o public/javascripts/ public/coffeescript/*.coffee
+coffee -wcb -o public/javascripts/ public/coffeescripts/*.coffee
+```
+
+## Running
+
+```
+coffee app.coffee
 ```
 
 ## Tests
