@@ -47,7 +47,7 @@ bower install
 
 compile client coffeescripts on save:
 ```
-coffee -wcb -o public/javascripts/ public/coffeescript/*.coffee
+coffee -wcb -o public/javascripts/ public/coffeescripts/*.coffee
 ```
 
 ## Tests
