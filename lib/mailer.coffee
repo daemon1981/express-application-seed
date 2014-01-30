@@ -3,85 +3,61 @@ nodemailer     = require "nodemailer"
 emailTemplates = require 'email-templates'
 _              = require('underscore')._
 
-smtpTransport  = nodemailer.createTransport("Sendmail")
+class Mailer
 
-module.exports = ->
-  self = this
+  ###*
+   * Constructor
+   * @param {string} type            type of smtp transport (SMTP, SES, SENDMAIL, STUB)
+   * @param {string} templateRootDir template root dir
+   * @param {string} options         smtp transport options
+   * @see https://github.com/andris9/Nodemailer
+   ###
+  constructor: (@type, @templateRootDir, @options) ->
+    @smtpTransport  = nodemailer.createTransport(@type, @options)
 
-  @getTemplatesDir = (locale) ->
-    if _.indexOf(config.languages, locale) is -1
-      locale = config.email.default.language
-    return require('path').join(__dirname, '../templates/emails/' + locale)
+  ###*
+   * Get template dir according to template root dir and locale
+   * @param {string} locale locale of the template
+   ###
+  getTemplatesDir: (locale) ->
+    return @templateRootDir + locale
 
-  # send mail with defined transport object
-  @sendMail = (mailOptions, callback) ->
-    smtpTransport.sendMail mailOptions, (err, response) ->
+  ###*
+   * send mail with defined transport object
+   * @param {string} mailParams        params for the email
+   * @callback callback(err, response) callback function to run when the sending is completed
+   ###
+  doSendMail: (mailParams, callback) ->
+    @smtpTransport.sendMail mailParams, (err, response) ->
       return callback(err) if err
       callback(err, response)
 
-  @sendSignupConfirmation = (locale, email, validationUrl, callback) ->
-    emailTemplates self.getTemplatesDir(locale), (err, template) ->
+  ###*
+   * send email according to a local and template
+   * @param {string} locale        locale for the template
+   * @param {string} templateName  template name
+   * @param {string} subject       subject of the mail
+   * @param {string} emailTo       email address recipient
+   * @param {Object} [bodyData]    json containing values of the template data
+   * @callback callback(err)
+   ###
+  sendMail: (locale, templateName, subject, emailTo, bodyData, callback) ->
+    self = @
+
+    if typeof bodyData == 'function'
+      callback = bodyData
+      bodyData = {}
+
+    emailTemplates @getTemplatesDir(locale), (err, template) ->
       return callback(err) if err
-      template "signup", {url: validationUrl}, (err, html, text) ->
+      template templateName, bodyData, (err, html, text) ->
         return callback(err) if err
-        self.sendMail
+        self.doSendMail
           from: config.mailer.sender['no-reply']
-          to: email
-          subject: "Please validate your account"
+          to: emailTo
+          subject: subject
           text: text
           html: html
         , callback
 
-  @sendAccountValidatedConfirmation = (locale, email, callback) ->
-    emailTemplates self.getTemplatesDir(locale), (err, template) ->
-      return callback(err) if err
-      template "accountValidated", {}, (err, html, text) ->
-        return callback(err) if err
-        self.sendMail
-          from: config.mailer.sender['no-reply']
-          to: email
-          subject: "Welcome to Super Site !"
-          text: text
-          html: html
-        , callback
-
-  @sendRequestForResetingPassword = (locale, email, url, callback) ->
-    emailTemplates self.getTemplatesDir(locale), (err, template) ->
-      return callback(err) if err
-      template "requestForResetingPassword", url: url, (err, html, text) ->
-        return callback(err) if err
-        self.sendMail
-          from: config.mailer.sender['no-reply']
-          to: email
-          subject: "Reset your password"
-          text: text
-          html: html
-        , callback
-
-  @sendPasswordReseted = (locale, email, url, callback) ->
-    emailTemplates self.getTemplatesDir(locale), (err, template) ->
-      return callback(err) if err
-      template "passwordReseted", { url: url, email: email}, (err, html, text) ->
-        return callback(err) if err
-        self.sendMail
-          from: config.mailer.sender['no-reply']
-          to: email
-          subject: "Your password has been reseted"
-          text: text
-          html: html
-        , callback
-
-  @sendContactConfirmation = (locale, email, callback) ->
-    emailTemplates self.getTemplatesDir(locale), (err, template) ->
-      return callback(err) if err
-      template "contactConfirmation", {}, (err, html, text) ->
-        return callback(err) if err
-        self.sendMail
-          from: config.mailer.sender['no-reply']
-          to: email
-          subject: "Your contact request has been received"
-          text: text
-          html: html
-        , callback
-
-  return
+module.exports = Mailer

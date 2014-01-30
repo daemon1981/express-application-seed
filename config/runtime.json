@@ -1,1 +1,33 @@
-{}
+{
+  "Mongo": {
+    "options": {
+      "db": {
+        "read_preference": "primary",
+        "forceServerObjectId": false,
+        "w": 1
+      },
+      "auth": {},
+      "server": {
+        "socketOptions": {
+          "host": "127.0.0.1",
+          "port": 27017,
+          "domainSocket": false,
+          "timeout": 0,
+          "noDelay": true,
+          "keepAlive": 0,
+          "encoding": null,
+          "bufferSize": 0
+        },
+        "auto_reconnect": true
+      },
+      "replset": {
+        "socketOptions": {}
+      }
+    }
+  },
+  "mailer": {
+    "sender": {
+      "no-reply": "no-reply@toto.com"
+    }
+  }
+}
