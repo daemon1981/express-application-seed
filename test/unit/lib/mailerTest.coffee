@@ -12,7 +12,6 @@ describe "Mailer", ->
   emailTo = 'toto@toto.com'
   emailFrom = 'no-reply@toto.com'
   locale = 'en'
-  config.mailer.sender['no-reply'] = emailFrom
   mailer = {}
 
   beforeEach (done) ->
@@ -32,7 +31,7 @@ describe "Mailer", ->
   describe "When sending signup confirmation", ->
     it "should call sendMail", (done) ->
       validationUrl = 'http://dummy-url.com'
-      mailer.sendMail locale, "signup", 'dummy-subject', emailTo, {url: validationUrl}, (err, response) ->
+      mailer.sendMail locale, "signup", 'dummy-subject', emailFrom, emailTo, {url: validationUrl}, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [validationUrl])
@@ -40,7 +39,7 @@ describe "Mailer", ->
 
   describe "When sending account validation confirmation", ->
     it "should call sendMail", (done) ->
-      mailer.sendMail locale, "accountValidated", 'dummy-subject', emailTo, (err, response) ->
+      mailer.sendMail locale, "accountValidated", 'dummy-subject', emailFrom, emailTo, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [])
@@ -49,7 +48,7 @@ describe "Mailer", ->
   describe "When sending request for reseting password", ->
     url = 'http://dummy-url.com'
     it "should call sendMail", (done) ->
-      mailer.sendMail locale, "requestForResetingPassword", 'dummy-subject', emailTo, {url: url}, (err, response) ->
+      mailer.sendMail locale, "requestForResetingPassword", 'dummy-subject', emailFrom, emailTo, {url: url}, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [url])
@@ -58,7 +57,7 @@ describe "Mailer", ->
   describe "When sending password reset process", ->
     url = 'http://dummy-url.com'
     it "should call sendMail", (done) ->
-      mailer.sendMail locale, "passwordReseted", 'dummy-subject', emailTo, {url: url, email: emailTo}, (err, response) ->
+      mailer.sendMail locale, "passwordReseted", 'dummy-subject', emailFrom, emailTo, {url: url, email: emailTo}, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [url, emailTo])
@@ -66,7 +65,7 @@ describe "Mailer", ->
 
   describe "When sending contact confirmation", ->
     it "should call sendMail", (done) ->
-      mailer.sendMail locale, "contactConfirmation", 'dummy-subject', emailTo, (err, response) ->
+      mailer.sendMail locale, "contactConfirmation", 'dummy-subject', emailFrom, emailTo, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [])

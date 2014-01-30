@@ -9,6 +9,7 @@ Image    = require '../lib/image'
 
 image  = new Image(config.Upload)
 mailer = new Mailer("Sendmail", require('path').join(__dirname, '../templates/emails/'))
+emailNoReply = config.mailer.sender['no-reply']
 
 module.exports = (app) ->
   # Helpers
@@ -71,7 +72,7 @@ module.exports = (app) ->
     User.signup req.body.email, req.body.password, req.locale, (err, user) ->
       return renderWithError(err.message) if err
       url = 'http://' + req.host + '/signup/validation?key=' + user.validationKey
-      mailer.sendMail req.locale, "signup", "Please validate your account", user.email, {url: url}, (err, response) ->
+      mailer.sendMail req.locale, "signup", "Please validate your account", emailNoReply, user.email, {url: url}, (err, response) ->
         return next(err) if err
         res.redirect '/signupConfirmation'
 
@@ -83,7 +84,7 @@ module.exports = (app) ->
       return res.redirect '/profile'
     User.accountValidator req.query.key, (err, user) ->
       return res.redirect '/' if err
-      mailer.sendMail req.locale, "accountValidated", "Welcome to Super Site !", user.email, (err, response) ->
+      mailer.sendMail req.locale, "accountValidated", "Welcome to Super Site !", emailNoReply, user.email, (err, response) ->
         return next(err) if err
         res.redirect '/signupValidation'
 
@@ -102,7 +103,7 @@ module.exports = (app) ->
       user.requestResetPassword (err, user) ->
         return next(err) if err
         url = 'http://' + req.host + '/reset/password?key=' + user.regeneratePasswordKey
-        mailer.sendMail req.locale, "requestForResetingPassword", "Reset your password", user.email, {url: url}, (err, response) ->
+        mailer.sendMail req.locale, "requestForResetingPassword", "Reset your password", emailNoReply, user.email, {url: url}, (err, response) ->
           return next(err) if err
           req.flash 'success', 'We\'ve sent to you a email. Check your mail box.'
           res.redirect '/'
@@ -140,7 +141,7 @@ module.exports = (app) ->
           return next(err) if err
           # url for recovering in case user did not perform this action
           recoveringUrl = 'http://' + req.host + '/request/reset/password'
-          mailer.sendMail req.locale, "passwordReseted", "Your password has been reseted", user.email, {url: recoveringUrl, email: user.email}, (err, response) ->
+          mailer.sendMail req.locale, "passwordReseted", "Your password has been reseted", emailNoReply, user.email, {url: recoveringUrl, email: user.email}, (err, response) ->
             return next(err) if err
             req.flash 'success', 'Your password has been updated. Please login again.'
             res.redirect '/login'
@@ -206,7 +207,7 @@ module.exports = (app) ->
           subject: message: err.errors.subject?.message
           message: message: err.errors.message?.message
       return res.redirect '/contact/confirmation' if !req.user
-      mailer.sendMail req.locale, "contactConfirmation", "Your contact request has been received", req.user.email, () ->
+      mailer.sendMail req.locale, "contactConfirmation", "Your contact request has been received", emailNoReply, req.user.email, () ->
         res.redirect '/contact/confirmation'
 
   app.get '/contact/confirmation', (req, res) ->

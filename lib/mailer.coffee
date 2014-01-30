@@ -41,7 +41,7 @@ class Mailer
    * @param {Object} [bodyData]    json containing values of the template data
    * @callback callback(err)
    ###
-  sendMail: (locale, templateName, subject, emailTo, bodyData, callback) ->
+  sendMail: (locale, templateName, subject, emailFrom, emailTo, bodyData, callback) ->
     self = @
 
     if typeof bodyData == 'function'
@@ -53,11 +53,11 @@ class Mailer
       template templateName, bodyData, (err, html, text) ->
         return callback(err) if err
         self.doSendMail
-          from: config.mailer.sender['no-reply']
-          to: emailTo
+          from:    emailFrom
+          to:      emailTo
           subject: subject
-          text: text
-          html: html
+          text:    text
+          html:    html
         , callback
 
 module.exports = Mailer
