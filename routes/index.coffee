@@ -83,7 +83,7 @@ module.exports = (app) ->
       return res.redirect '/profile'
     User.accountValidator req.query.key, (err, user) ->
       return res.redirect '/' if err
-      mailer.sendMail req.locale, "accountValidated", "Welcome to Super Site !", user.email, {}, (err, response) ->
+      mailer.sendMail req.locale, "accountValidated", "Welcome to Super Site !", user.email, (err, response) ->
         return next(err) if err
         res.redirect '/signupValidation'
 
@@ -206,7 +206,7 @@ module.exports = (app) ->
           subject: message: err.errors.subject?.message
           message: message: err.errors.message?.message
       return res.redirect '/contact/confirmation' if !req.user
-      mailer.sendMail req.locale, "contactConfirmation", "Your contact request has been received", req.user.email, {}, () ->
+      mailer.sendMail req.locale, "contactConfirmation", "Your contact request has been received", req.user.email, () ->
         res.redirect '/contact/confirmation'
 
   app.get '/contact/confirmation', (req, res) ->

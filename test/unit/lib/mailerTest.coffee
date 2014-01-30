@@ -40,7 +40,7 @@ describe "Mailer", ->
 
   describe "When sending account validation confirmation", ->
     it "should call sendMail", (done) ->
-      mailer.sendMail locale, "accountValidated", 'dummy-subject', emailTo, {}, (err, response) ->
+      mailer.sendMail locale, "accountValidated", 'dummy-subject', emailTo, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [])
@@ -66,7 +66,7 @@ describe "Mailer", ->
 
   describe "When sending contact confirmation", ->
     it "should call sendMail", (done) ->
-      mailer.sendMail locale, "contactConfirmation", 'dummy-subject', emailTo, {}, (err, response) ->
+      mailer.sendMail locale, "contactConfirmation", 'dummy-subject', emailTo, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [])
