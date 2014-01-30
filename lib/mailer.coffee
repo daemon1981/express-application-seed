@@ -16,7 +16,7 @@ class Mailer
       return callback(err) if err
       callback(err, response)
 
-  sendMail: (templateName, subject, locale, emailTo, bodyData, callback) ->
+  sendMail: (locale, templateName, subject, emailTo, bodyData, callback) ->
     self = @
     emailTemplates @getTemplatesDir(locale), (err, template) ->
       return callback(err) if err
@@ -29,21 +29,5 @@ class Mailer
           text: text
           html: html
         , callback
-
-  sendSignupConfirmation: (locale, subject, emailTo, validationUrl, callback) ->
-    @sendMail "signup", subject, locale, emailTo, {url: validationUrl}, callback
-
-  sendAccountValidatedConfirmation: (locale, subject, emailTo, callback) ->
-    @sendMail "accountValidated", subject, locale, emailTo, {}, callback
-
-  sendRequestForResetingPassword: (locale, subject, emailTo, url, callback) ->
-    @sendMail "requestForResetingPassword", subject, locale, emailTo, {url: url}, callback
-
-  sendPasswordReseted: (locale, subject, emailTo, url, callback) ->
-    @sendMail "passwordReseted", subject, locale, emailTo, {url: url, email: emailTo}, callback
-
-  sendContactConfirmation: (locale, subject, emailTo, callback) ->
-    @sendMail "contactConfirmation", subject, locale, emailTo, {}, callback
-
 
 module.exports = Mailer

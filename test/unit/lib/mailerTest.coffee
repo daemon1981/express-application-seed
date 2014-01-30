@@ -29,44 +29,44 @@ describe "Mailer", ->
     for variable in textVariables
       assert new RegExp(variable).test(objectData.html), variable + ' should be in html body'
 
-  describe "When sending signup confirmation 'sendSignupConfirmation()'", ->
+  describe "When sending signup confirmation", ->
     it "should call sendMail", (done) ->
       validationUrl = 'http://dummy-url.com'
-      mailer.sendSignupConfirmation locale, 'dummy-subject', emailTo, validationUrl, (err, response) ->
+      mailer.sendMail locale, "signup", 'dummy-subject', emailTo, {url: validationUrl}, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [validationUrl])
         done()
 
-  describe "When sending account validation confirmation 'sendAccountValidatedConfirmation()'", ->
+  describe "When sending account validation confirmation", ->
     it "should call sendMail", (done) ->
-      mailer.sendAccountValidatedConfirmation locale, 'dummy-subject', emailTo, (err, response) ->
+      mailer.sendMail locale, "accountValidated", 'dummy-subject', emailTo, {}, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [])
         done()
 
-  describe "When sending request for reseting password 'sendRequestForResetingPassword()'", ->
+  describe "When sending request for reseting password", ->
     url = 'http://dummy-url.com'
     it "should call sendMail", (done) ->
-      mailer.sendRequestForResetingPassword locale, 'dummy-subject', emailTo, url, (err, response) ->
+      mailer.sendMail locale, "requestForResetingPassword", 'dummy-subject', emailTo, {url: url}, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [url])
         done()
 
-  describe "When sending password reset process 'sendPasswordReseted()'", ->
+  describe "When sending password reset process", ->
     url = 'http://dummy-url.com'
     it "should call sendMail", (done) ->
-      mailer.sendPasswordReseted locale, 'dummy-subject', emailTo, url, (err, response) ->
+      mailer.sendMail locale, "passwordReseted", 'dummy-subject', emailTo, {url: url, email: emailTo}, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [url, emailTo])
         done()
 
-  describe "When sending contact confirmation 'sendContactConfirmation()'", ->
+  describe "When sending contact confirmation", ->
     it "should call sendMail", (done) ->
-      mailer.sendContactConfirmation locale, 'dummy-subject', emailTo, (err, response) ->
+      mailer.sendMail locale, "contactConfirmation", 'dummy-subject', emailTo, {}, (err, response) ->
         should.not.exists(err)
         assert(mailer.doSendMail.called)
         checkSendMailArgs(mailer.doSendMail.args, [])
