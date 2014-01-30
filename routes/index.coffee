@@ -8,7 +8,7 @@ Mailer   = require '../lib/mailer'
 Image    = require '../lib/image'
 
 image  = new Image(config.Upload)
-mailer = new Mailer()
+mailer = new Mailer("Sendmail", require('path').join(__dirname, '../templates/emails/'))
 
 module.exports = (app) ->
   # Helpers

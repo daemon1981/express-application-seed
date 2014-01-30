@@ -6,6 +6,7 @@ sinon        = require 'sinon'
 config       = require 'config'
 
 Mailer       = require "../../../lib/mailer"
+templateRootDir = require('path').join(__dirname, '../../../templates/emails/')
 
 describe "Mailer", ->
   emailTo = 'toto@toto.com'
@@ -15,7 +16,7 @@ describe "Mailer", ->
   mailer = {}
 
   beforeEach (done) ->
-    mailer = new Mailer()
+    mailer = new Mailer("Sendmail", templateRootDir)
     mailer.doSendMail = sinon.stub(mailer, 'doSendMail', (mailOptions, callback) -> return callback(null, {}))
     done()
 
