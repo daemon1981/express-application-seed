@@ -4,8 +4,8 @@ assert       = require 'assert'
 should       = require 'should'
 sinon        = require 'sinon'
 config       = require 'config'
+Mailer       = require "node-service-mailer"
 
-Mailer       = require "../../../lib/mailer"
 templateRootDir = require('path').join(__dirname, '../../../templates/emails/')
 
 describe "Mailer", ->
