@@ -11,77 +11,40 @@ module.exports = ->
   @getTemplatesDir = (locale) ->
     if _.indexOf(config.languages, locale) is -1
       locale = config.email.default.language
-    return require('path').join(__dirname, '../templates/emails/' + locale)
+    return require('path').join(__dirname, '../templates/emails/') + locale
 
   # send mail with defined transport object
-  @sendMail = (mailOptions, callback) ->
+  @doSendMail = (mailOptions, callback) ->
     smtpTransport.sendMail mailOptions, (err, response) ->
       return callback(err) if err
       callback(err, response)
 
-  @sendSignupConfirmation = (locale, email, validationUrl, callback) ->
+  @sendMail = (templateName, subject, locale, emailTo, bodyData, callback) ->
     emailTemplates self.getTemplatesDir(locale), (err, template) ->
       return callback(err) if err
-      template "signup", {url: validationUrl}, (err, html, text) ->
+      template templateName, bodyData, (err, html, text) ->
         return callback(err) if err
-        self.sendMail
+        self.doSendMail
           from: config.mailer.sender['no-reply']
-          to: email
-          subject: "Please validate your account"
+          to: emailTo
+          subject: subject
           text: text
           html: html
         , callback
 
-  @sendAccountValidatedConfirmation = (locale, email, callback) ->
-    emailTemplates self.getTemplatesDir(locale), (err, template) ->
-      return callback(err) if err
-      template "accountValidated", {}, (err, html, text) ->
-        return callback(err) if err
-        self.sendMail
-          from: config.mailer.sender['no-reply']
-          to: email
-          subject: "Welcome to Super Site !"
-          text: text
-          html: html
-        , callback
+  @sendSignupConfirmation = (locale, subject, emailTo, validationUrl, callback) ->
+    @sendMail "signup", subject, locale, emailTo, {url: validationUrl}, callback
 
-  @sendRequestForResetingPassword = (locale, email, url, callback) ->
-    emailTemplates self.getTemplatesDir(locale), (err, template) ->
-      return callback(err) if err
-      template "requestForResetingPassword", url: url, (err, html, text) ->
-        return callback(err) if err
-        self.sendMail
-          from: config.mailer.sender['no-reply']
-          to: email
-          subject: "Reset your password"
-          text: text
-          html: html
-        , callback
+  @sendAccountValidatedConfirmation = (locale, subject, emailTo, callback) ->
+    @sendMail "accountValidated", subject, locale, emailTo, {}, callback
 
-  @sendPasswordReseted = (locale, email, url, callback) ->
-    emailTemplates self.getTemplatesDir(locale), (err, template) ->
-      return callback(err) if err
-      template "passwordReseted", { url: url, email: email}, (err, html, text) ->
-        return callback(err) if err
-        self.sendMail
-          from: config.mailer.sender['no-reply']
-          to: email
-          subject: "Your password has been reseted"
-          text: text
-          html: html
-        , callback
+  @sendRequestForResetingPassword = (locale, subject, emailTo, url, callback) ->
+    @sendMail "requestForResetingPassword", subject, locale, emailTo, {url: url}, callback
 
-  @sendContactConfirmation = (locale, email, callback) ->
-    emailTemplates self.getTemplatesDir(locale), (err, template) ->
-      return callback(err) if err
-      template "contactConfirmation", {}, (err, html, text) ->
-        return callback(err) if err
-        self.sendMail
-          from: config.mailer.sender['no-reply']
-          to: email
-          subject: "Your contact request has been received"
-          text: text
-          html: html
-        , callback
+  @sendPasswordReseted = (locale, subject, emailTo, url, callback) ->
+    @sendMail "passwordReseted", subject, locale, emailTo, {url: url, email: emailTo}, callback
+
+  @sendContactConfirmation = (locale, subject, emailTo, callback) ->
+    @sendMail "contactConfirmation", subject, locale, emailTo, {}, callback
 
   return
