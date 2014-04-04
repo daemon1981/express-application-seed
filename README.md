@@ -32,13 +32,13 @@ Functional Strategies:
 
 ### Installation
 
-```
-npm install -g coffee-script
-npm install -g mocha
-npm install
-git submodule sync
-git submodule update --init --recursive
-bower install
+```bash
+$ npm install -g coffee-script
+$ npm install -g mocha
+$ npm install
+$ git submodule sync
+$ git submodule update --init --recursive
+$ bower install
 ```
 
 ### Prerequisite
@@ -46,33 +46,33 @@ bower install
 [Install Redis](http://redis.io/topics/quickstart)
 
 compile client coffeescripts on save:
-```
+```coffee
 coffee -wcb -o public/javascripts/ public/coffeescripts/*.coffee
 ```
 
 ## Running
 
-```
-coffee app.coffee
+```bash
+$ coffee app.coffee
 ```
 
 ## Tests
 
 launch tests:
-```
-make REPORTER=dot test
+```bash
+$ make REPORTER=dot test
 ```
 
 launch unit tests:
-```
-make REPORTER=dot test-unit
+```bash
+$ make REPORTER=dot test-unit
 ```
 
 [Unit tests table of content](https://github.com/daemon1981/express-site-plinth-example/blob/master/test-unit.md)
 
 launch functional tests:
-```
-make REPORTER=dot test-functional
+```bash
+$ make REPORTER=dot test-functional
 ```
 
 [Functional tests table of content](https://github.com/daemon1981/express-site-plinth-example/blob/master/test-functional.md)
