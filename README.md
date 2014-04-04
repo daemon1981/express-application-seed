@@ -46,8 +46,8 @@ $ bower install
 [Install Redis](http://redis.io/topics/quickstart)
 
 compile client coffeescripts on save:
-```coffee
-coffee -wcb -o public/javascripts/ public/coffeescripts/*.coffee
+```bash
+$ coffee -wcb -o public/javascripts/ public/coffeescripts/*.coffee
 ```
 
 ## Running
