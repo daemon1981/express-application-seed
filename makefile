@@ -2,10 +2,10 @@ REPORTER = dot
 
 check: test
 
-test: test-unit
+test: test-unit test-functional
 
 test-unit:
-	@NODE_ENV=test ./node_modules/.bin/mocha \
+	@NODE_ENV=test mocha \
 		--compilers coffee:coffee-script \
 		--recursive \
 		--reporter $(REPORTER) \
@@ -20,7 +20,7 @@ test-functional:
 		test/functional
 
 test-unit-report:
-	@NODE_ENV=test ./node_modules/.bin/mocha \
+	@NODE_ENV=test mocha \
 		--compilers coffee:coffee-script \
 		--recursive \
 		--reporter markdown \
